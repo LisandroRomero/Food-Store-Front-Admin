@@ -1,30 +1,82 @@
+import { jwtDecode } from "jwt-decode";
 import { apiClient } from "./axiosInstance";
-import type { UserPublic } from "../features/users/types/users.types";
+import type {
+  LoginUserDto,
+  RegisterUserDto,
+  UserPublic,
+} from "../features/users/types/users.types";
 
-export async function requestLogin(email:string, contraseña:string) {
-    const body = new URLSearchParams({
-        email,
-        contraseña
-    });
-    await apiClient.post('/auth/login', body, {
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-    });
-    
+export interface TokenResponse {
+  access_token: string;
+  token_type: string;
+  expires_in: string;
 }
 
-
-export async function requestRegister(payload: {nombre: string, mail: string, contraseña: string}) {
-   const response = await apiClient.post('/auth/register', payload);
-   return response.data;
+interface JwtPayload {
+  sub: string;
 }
 
-export async function requestMe() {
-    const response = await apiClient.get<UserPublic>('/auth/me');
-    return response.data;
+export async function requestLogin(
+  payload: LoginUserDto
+): Promise<TokenResponse> {
+  const response = await apiClient.post<TokenResponse>(
+    "/auth/login",
+    payload
+  );
+  return response.data;
 }
 
-export async function requestLogout(): Promise<void> {
-    await apiClient.post('/auth/logout');
+export async function requestRegister(
+  payload: RegisterUserDto
+): Promise<UserPublic> {
+  const response = await apiClient.post<UserPublic>(
+    "/usuarios/register",
+    payload
+  );
+  return response.data;
+}
+
+export async function requestUserById(
+  userId: number,
+  accessToken: string
+): Promise<UserPublic> {
+  const response = await apiClient.get<UserPublic>(
+    `/usuarios/${userId}`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  );
+  return response.data;
+}
+
+export async function requestRefresh(): Promise<TokenResponse> {
+  const response =
+    await apiClient.patch<TokenResponse>(
+      "/usuarios/refresh"
+    );
+  return response.data;
+}
+
+export async function requestLogout(
+  accessToken: string
+): Promise<void> {
+  await apiClient.post(
+    "/usuarios/logout",
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  );
+}
+
+export function getUserIdFromToken(
+  accessToken: string
+): number {
+  const decoded =
+    jwtDecode<JwtPayload>(accessToken);
+  return Number(decoded.sub);
 }

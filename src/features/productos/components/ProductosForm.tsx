@@ -1,81 +1,102 @@
-import { useForm } from "@tanstack/react-form";
-
 import { useEffect } from "react";
 
+import { useForm } from "@tanstack/react-form";
+
 import type {
-  CreateProducto,
+  ProductoFormValues,
 } from "../types/productos.type";
 
-const EMPTY_VALUES: CreateProducto = {
+type Categoria = {
+  id: number;
+  nombre: string;
+};
+
+type Ingrediente = {
+  id: number;
+  nombre: string;
+};
+
+const EMPTY_VALUES: ProductoFormValues = {
   nombre: "",
+  unidad_medida_id: 1,
   descripcion: "",
-  imagenes_url: [],
   precio_base: 0,
+  imagenes_url: [],
   stock_cantidad: 0,
   disponible: true,
-  categoria_ids: [],
-  ingrediente_ids: [],
+  categorias: [],
+  ingredientes: [],
 };
 
 type Props = {
-  defaultValues?: CreateProducto;
+  defaultValues?: ProductoFormValues;
+
+  categorias: Categoria[];
+
+  ingredientes: Ingrediente[];
 
   onSubmit: (
-    values: CreateProducto
-  ) => void;
+    values: ProductoFormValues
+  ) => void | Promise<void>;
+
+  isLoading?: boolean;
 };
 
 export default function ProductoForm({
   defaultValues,
+  categorias,
+  ingredientes,
   onSubmit,
+  isLoading = false,
 }: Props) {
   const form = useForm({
-    defaultValues: EMPTY_VALUES,
+    defaultValues:
+      defaultValues ?? EMPTY_VALUES,
 
     onSubmit: async ({
       value,
     }) => {
-      onSubmit(value);
+      console.log(
+        "FORM VALUES",
+        value
+      );
+
+      await onSubmit(value);
     },
   });
 
-  // RESET PARA EDIT
   useEffect(() => {
-    if (defaultValues) {
-      form.reset(defaultValues);
-    } else {
-      form.reset(EMPTY_VALUES);
-    }
-  }, [defaultValues, form]);
+    form.reset(
+      defaultValues ??
+        EMPTY_VALUES
+    );
+  }, [defaultValues]);
 
   return (
     <form
       onSubmit={(e) => {
         e.preventDefault();
 
+        e.stopPropagation();
+
         form.handleSubmit();
       }}
       className="
         flex
         flex-col
-        gap-4
+        gap-5
       "
     >
       {/* NOMBRE */}
       <form.Field name="nombre">
         {(field) => (
-          <div
-            className="
-              flex
-              flex-col
-              gap-1
-            "
-          >
-            <label className="font-medium">
+          <div className="flex flex-col gap-1">
+            <label>
               Nombre
             </label>
 
             <input
+              type="text"
               value={
                 field.state.value
               }
@@ -84,15 +105,13 @@ export default function ProductoForm({
                   e.target.value
                 )
               }
-              placeholder="Nombre"
               className="
                 border
-                border-gray-300
+                border-slate-700
                 rounded-lg
                 px-3
                 py-2
                 bg-slate-950
-                text-slate-100
               "
             />
           </div>
@@ -102,14 +121,8 @@ export default function ProductoForm({
       {/* DESCRIPCION */}
       <form.Field name="descripcion">
         {(field) => (
-          <div
-            className="
-              flex
-              flex-col
-              gap-1
-            "
-          >
-            <label className="font-medium">
+          <div className="flex flex-col gap-1">
+            <label>
               Descripción
             </label>
 
@@ -122,57 +135,14 @@ export default function ProductoForm({
                   e.target.value
                 )
               }
-              placeholder="Descripción"
               className="
                 border
-                border-gray-300
+                border-slate-700
                 rounded-lg
                 px-3
                 py-2
+                min-h-28
                 bg-slate-950
-                text-slate-100
-              "
-            />
-          </div>
-        )}
-      </form.Field>
-
-      {/* IMAGENES */}
-      <form.Field name="imagenes_url">
-        {(field) => (
-          <div
-            className="
-              flex
-              flex-col
-              gap-1
-            "
-          >
-            <label className="font-medium">
-              Imágenes URL
-            </label>
-
-            <input
-              value={(
-                field.state.value ??
-                []
-              ).join(",")}
-              onChange={(e) =>
-                field.handleChange(
-                  e.target.value
-                    .split(",")
-                    .map((url) => url.trim())
-                    .filter(Boolean)
-                )
-              }
-              placeholder="url1,url2"
-              className="
-                border
-                border-gray-300
-                rounded-lg
-                px-3
-                py-2
-                bg-slate-950
-                text-slate-100
               "
             />
           </div>
@@ -182,19 +152,15 @@ export default function ProductoForm({
       {/* PRECIO */}
       <form.Field name="precio_base">
         {(field) => (
-          <div
-            className="
-              flex
-              flex-col
-              gap-1
-            "
-          >
-            <label className="font-medium">
-              Precio base
+          <div className="flex flex-col gap-1">
+            <label>
+              Precio
             </label>
 
             <input
               type="number"
+              min={0}
+              step="0.01"
               value={
                 field.state.value
               }
@@ -205,15 +171,13 @@ export default function ProductoForm({
                   )
                 )
               }
-              placeholder="Precio"
               className="
                 border
-                border-gray-300
+                border-slate-700
                 rounded-lg
                 px-3
                 py-2
                 bg-slate-950
-                text-slate-100
               "
             />
           </div>
@@ -223,19 +187,14 @@ export default function ProductoForm({
       {/* STOCK */}
       <form.Field name="stock_cantidad">
         {(field) => (
-          <div
-            className="
-              flex
-              flex-col
-              gap-1
-            "
-          >
-            <label className="font-medium">
+          <div className="flex flex-col gap-1">
+            <label>
               Stock
             </label>
 
             <input
               type="number"
+              min={0}
               value={
                 field.state.value
               }
@@ -246,15 +205,13 @@ export default function ProductoForm({
                   )
                 )
               }
-              placeholder="Stock"
               className="
                 border
-                border-gray-300
+                border-slate-700
                 rounded-lg
                 px-3
                 py-2
                 bg-slate-950
-                text-slate-100
               "
             />
           </div>
@@ -264,7 +221,7 @@ export default function ProductoForm({
       {/* DISPONIBLE */}
       <form.Field name="disponible">
         {(field) => (
-          <div
+          <label
             className="
               flex
               items-center
@@ -283,118 +240,145 @@ export default function ProductoForm({
               }
             />
 
-            <label>
-              Disponible
-            </label>
-          </div>
+            Disponible
+          </label>
         )}
       </form.Field>
 
       {/* CATEGORIAS */}
-      <form.Field name="categoria_ids">
-        {(field) => (
-          <div
-            className="
-              flex
-              flex-col
-              gap-1
-            "
-          >
-            <label className="font-medium">
-              IDs Categorías
-            </label>
+<form.Field name="categorias">
+  {(field) => (
+    <div className="flex flex-col gap-1">
+      <label>
+        Categorías
+      </label>
 
-            <input
-              value={(
-                field.state.value ??
-                []
-              ).join(",")}
-              onChange={(e) =>
-                field.handleChange(
-                  e.target.value
-                    .split(",")
-                    .map((id) =>
-                      Number(id.trim())
-                    )
-                    .filter(
-                      (n) => !isNaN(n)
-                    )
-                )
-              }
-              placeholder="1,2,3"
-              className="
-                border
-                border-gray-300
-                rounded-lg
-                px-3
-                py-2
-                bg-slate-950
-                text-slate-100
-              "
-            />
-          </div>
+      <select
+        multiple
+        value={(field.state.value ?? []).map(
+          (c: any) =>
+            String(c.id)
         )}
-      </form.Field>
+        onChange={(e) => {
+          const selected =
+            Array.from(
+              e.target.selectedOptions
+            ).map((option) => ({
+              id: Number(
+                option.value
+              ),
+              es_principal: false,
+            }));
 
-      {/* INGREDIENTES */}
-      <form.Field name="ingrediente_ids">
-        {(field) => (
-          <div
-            className="
-              flex
-              flex-col
-              gap-1
-            "
-          >
-            <label className="font-medium">
-              IDs Ingredientes
-            </label>
-
-            <input
-              value={(
-                field.state.value ??
-                []
-              ).join(",")}
-              onChange={(e) =>
-                field.handleChange(
-                  e.target.value
-                    .split(",")
-                    .map((id) =>
-                      Number(id.trim())
-                    )
-                    .filter(
-                      (n) => !isNaN(n)
-                    )
-                )
-              }
-              placeholder="1,2,3"
-              className="
-                border
-                border-gray-300
-                rounded-lg
-                px-3
-                py-2
-                bg-slate-950
-                text-slate-100
-              "
-            />
-          </div>
+          field.handleChange(
+            selected
+          );
+        }}
+        className="
+          border
+          border-slate-700
+          rounded-lg
+          px-3
+          py-2
+          bg-slate-950
+          min-h-40
+        "
+      >
+        {(categorias ?? []).map(
+          (categoria) => (
+            <option
+              key={categoria.id}
+              value={categoria.id}
+            >
+              {categoria.nombre}
+            </option>
+          )
         )}
-      </form.Field>
+      </select>
+    </div>
+  )}
+</form.Field>
+
+{/* INGREDIENTES */}
+<form.Field name="ingredientes">
+  {(field) => (
+    <div className="flex flex-col gap-1">
+      <label>
+        Ingredientes
+      </label>
+
+      <select
+        multiple
+        value={(field.state.value ?? []).map(
+          (i: any) =>
+            String(i.id)
+        )}
+        onChange={(e) => {
+          const selected =
+            Array.from(
+              e.target.selectedOptions
+            ).map((option) => ({
+              id: Number(
+                option.value
+              ),
+              cantidad: 1,
+              unidad_medida_id: 1,
+              es_removible: true,
+            }));
+
+          field.handleChange(
+            selected
+          );
+        }}
+        className="
+          border
+          border-slate-700
+          rounded-lg
+          px-3
+          py-2
+          bg-slate-950
+          min-h-52
+        "
+      >
+        {(ingredientes ?? []).map(
+          (
+            ingrediente
+          ) => (
+            <option
+              key={
+                ingrediente.id
+              }
+              value={
+                ingrediente.id
+              }
+            >
+              {
+                ingrediente.nombre
+              }
+            </option>
+          )
+        )}
+      </select>
+    </div>
+  )}
+</form.Field>
 
       {/* SUBMIT */}
       <button
         type="submit"
+        disabled={isLoading}
         className="
           bg-blue-500
           hover:bg-blue-600
+          disabled:opacity-50
           text-white
           py-2
           rounded-lg
-          transition
         "
       >
-        Guardar
+        {isLoading
+          ? "Guardando..."
+          : "Guardar"}
       </button>
     </form>
   );

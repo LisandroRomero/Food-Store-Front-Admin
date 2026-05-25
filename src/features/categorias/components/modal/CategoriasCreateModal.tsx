@@ -14,7 +14,7 @@ type Props = {
   ) => void;
 };
 
-const CategoriaCreateModal =({
+const CategoriasCreateModal =({
   isOpen,
   onClose,
   onCreate,
@@ -40,4 +40,4 @@ const CategoriaCreateModal =({
   );
 }
 
-export default CategoriaCreateModal;
+export default CategoriasCreateModal;

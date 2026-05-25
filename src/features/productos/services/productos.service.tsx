@@ -1,88 +1,158 @@
-import type { IProducto, IProductoResponse, CreateProducto } from "../types/productos.type";
+import type {
+  Producto,
+  ProductosResponse,
+  CreateProductoDTO,
+  UpdateProductoDTO,
+  ProductoDisponibilidadDTO,
+  ProductoFilters,
+} from "../types/productos.type";
 
-import { API_BASE_URL } from "../../../api/config";
+import { apiClient } from "../../../api/axiosInstance";
 
-const endpoint = `${API_BASE_URL}/productos`;
+const endpoint = "/productos";
 
-export const getProducts = async(): Promise<IProducto[]> => {
-    try {
-        const response = await fetch(endpoint);
-        const data: IProductoResponse = await response.json();
-        return data.data;
-    } catch (error) {
-        console.log("Error trayendo productos:", error);
-        throw error;
-    }
-}
+/* =========================
+   GET ALL
+========================= */
+export const getProducts = async (
+  filters?: ProductoFilters
+): Promise<Producto[]> => {
+  try {
+    const response =
+      await apiClient.get<ProductosResponse>(
+        endpoint,
+        {
+          params: filters,
+        }
+      );
 
-export const getProductById = async (id: number): Promise<IProducto> => {
-    try {
-        const response = await fetch(`${endpoint}/${id}`);
-        const data: IProducto = await response.json();
-        return data;
-    } catch (error) {
-        console.log("Error trayendo producto:", error);
-        throw error;
-    }
+    return (
+      response.data.data ?? []
+    );
+  } catch (error) {
+    console.error(
+      "Error trayendo productos:",
+      error
+    );
+
+    throw error;
+  }
 };
 
+/* =========================
+   GET BY ID
+========================= */
+export const getProductById = async (
+  id: number
+): Promise<Producto> => {
+  try {
+    const response =
+      await apiClient.get<Producto>(
+        `${endpoint}/${id}`
+      );
 
-export const createProduct = async (productData: CreateProducto): Promise<IProducto> => {
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error trayendo producto:",
+      error
+    );
+
+    throw error;
+  }
+};
+
+/* =========================
+   CREATE
+========================= */
+export const createProduct = async (
+  productData: CreateProductoDTO
+): Promise<Producto> => {
+  try {
+    const response =
+      await apiClient.post<Producto>(
+        endpoint,
+        productData
+      );
+
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error creando producto:",
+      error
+    );
+
+    throw error;
+  }
+};
+
+/* =========================
+   UPDATE
+========================= */
+export const updateProduct = async (
+  id: number,
+  productData: UpdateProductoDTO
+): Promise<Producto> => {
+  try {
+    const response =
+      await apiClient.patch<Producto>(
+        `${endpoint}/${id}`,
+        productData
+      );
+
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error actualizando producto:",
+      error
+    );
+
+    throw error;
+  }
+};
+
+/* =========================
+   UPDATE DISPONIBILIDAD
+========================= */
+export const updateProductDisponibilidad =
+  async (
+    id: number,
+    data: ProductoDisponibilidadDTO
+  ): Promise<Producto> => {
     try {
-        const response = await fetch(endpoint, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(productData)
-        });
+      const response =
+        await apiClient.patch<Producto>(
+          `${endpoint}/${id}/disponibilidad`,
+          data
+        );
 
-        if (!response.ok) {
-            throw new Error("Error creando producto");
-        }
-
-        const data: IProducto = await response.json();
-        return data;
+      return response.data;
     } catch (error) {
-        console.log("Error creando producto:", error);
-        throw error;
+      console.error(
+        "Error actualizando disponibilidad:",
+        error
+      );
+
+      throw error;
     }
-}
+  };
 
-export const deleteProduct = async (id: number): Promise<void> => {
-    try {
-        const response = await fetch(`${endpoint}/${id}`, {
-            method: "DELETE"
-        });
-        if(!response.ok){
-            throw new Error("Error eliminando producto");
-        }
-    } catch (error) {
-        console.log("Error eliminando producto:", error);
-        throw error;
-    }
-}
+/* =========================
+   DELETE
+========================= */
+export const deleteProduct = async (
+  id: number
+): Promise<void> => {
+  try {
+    await apiClient.delete(
+      `${endpoint}/${id}`
+    );
+  } catch (error) {
+    console.error(
+      "Error eliminando producto:",
+      error
+    );
 
-
-
-export const updateProduct = async (id: number, productData: CreateProducto): Promise<IProducto> => {
-    try {
-        const response = await fetch(`${endpoint}/${id}`, {
-            method: "PATCH",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(productData)
-        });
-
-        if (!response.ok) {
-            throw new Error("Error actualizando producto");
-        }
-
-        const data: IProducto = await response.json();
-        return data;
-    } catch (error) {
-        console.log("Error actualizando producto:", error);
-        throw error;
-    }
-}
+    throw error;
+  }
+};

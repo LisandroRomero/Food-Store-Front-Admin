@@ -20,7 +20,7 @@ type Props = {
   ) => void;
 };
 
-const CategoriaUpdateModal = ({ isOpen, categoria, onClose, onUpdate }: Props) => {
+const CategoriasUpdateModal = ({ isOpen, categoria, onClose, onUpdate }: Props) => {
   const handleSubmit = (
     values: CreateCategoria
   ) => {

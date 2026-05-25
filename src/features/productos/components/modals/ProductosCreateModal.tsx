@@ -1,43 +1,128 @@
-import type {
-  CreateProducto,
-} from "../../types/productos.type";
+import { useQuery } from "@tanstack/react-query";
 
 import ProductoForm from "../ProductosForm";
 
-import Modal from "../../../../shared/Modal";
+import type {
+  ProductoFormValues,
+} from "../../types/productos.type";
+
+import {
+  getCategorias,
+} from "../../../categorias/services/categorias.services";
+
+import {
+  getIngredientes,
+} from "../../../ingredientes/services/ingredientes.service";
 
 type Props = {
   isOpen: boolean;
 
   onClose: () => void;
 
-  onCreate: (
-    data: CreateProducto
-  ) => void;
+  onSubmit: (
+    values: ProductoFormValues
+  ) => void | Promise<void>;
+
+  isLoading?: boolean;
 };
 
-export default function ProductoCreateModal({
-  isOpen,
+export default function ProductosCreateModal({
+  isOpen: open,
   onClose,
-  onCreate,
+  onSubmit,
+  isLoading = false,
 }: Props) {
-  const handleSubmit = (
-    values: CreateProducto
-  ) => {
-    onCreate(values);
 
-    onClose();
-  };
+  const {
+    data: categorias,
+    isLoading: categoriasLoading,
+  } = useQuery({
+    queryKey: ["categorias"],
+    queryFn: getCategorias,
+  });
+
+  const {
+    data: ingredientes,
+    isLoading: ingredientesLoading,
+  } = useQuery({
+    queryKey: ["ingredientes"],
+    queryFn: getIngredientes,
+  });
+
+  if (!open) return null;
+
+  const loading =
+    categoriasLoading ||
+    ingredientesLoading;
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title="Nuevo producto"
+    <div
+      className="
+        fixed
+        inset-0
+        bg-black/50
+        flex
+        items-center
+        justify-center
+        z-50
+      "
     >
-      <ProductoForm
-        onSubmit={handleSubmit}
-      />
-    </Modal>
+      <div
+        className="
+          bg-slate-900
+          p-6
+          rounded-xl
+          w-full
+          max-w-2xl
+        "
+      >
+        <div
+          className="
+            flex
+            items-center
+            justify-between
+            mb-5
+          "
+        >
+          <h2
+            className="
+              text-xl
+              font-semibold
+            "
+          >
+            Crear producto
+          </h2>
+
+          <button
+            onClick={onClose}
+            className="
+              text-slate-400
+              hover:text-white
+            "
+          >
+            ✕
+          </button>
+        </div>
+
+        {loading ? (
+          <div
+            className="
+              py-10
+              text-center
+              text-slate-400
+            "
+          >
+            Cargando datos...
+          </div>
+        ) : (
+          <ProductoForm
+            categorias={categorias ?? []}
+            ingredientes={ingredientes ?? []}
+            onSubmit={onSubmit}
+            isLoading={isLoading}
+          />
+        )}
+      </div>
+    </div>
   );
 }

@@ -1,81 +1,86 @@
 import type {
-    IIngrediente,
-    IIngredientesResponse
+  IIngrediente,
+  IIngredienteResponse,
+  CreateIngrediente,
+  UpdateIngrediente,
 } from "../types/ingredientes.type";
 
-import { API_BASE_URL } from "../../../api/config";
+import { apiClient } from "../../../api/axiosInstance";
 
-const endpoint = `${API_BASE_URL}/ingredientes`;
+const endpoint = "/ingredientes";
 
-export const getIngredientes = async (): Promise<IIngrediente[]> => {
-    try {
+export const getIngredientes = async (): Promise<
+  IIngrediente[]
+> => {
+  try {
+    const response =
+      await apiClient.get<IIngredienteResponse>(
+        endpoint
+      );
 
-    const response = await fetch(endpoint);
-    const data: IIngredientesResponse = await response.json();
-    return data.data;
-    } catch (error) {
-        console.log("Error trayendo ingredientes:", error);
-        throw error;
-    }
-}
+    return response.data.data;
+  } catch (error) {
+    console.log(
+      "Error trayendo ingredientes:",
+      error
+    );
+    throw error;
+  }
+};
 
+export const createIngrediente = async (
+  ingrediente: CreateIngrediente
+): Promise<IIngrediente> => {
+  try {
+    const response =
+      await apiClient.post<IIngrediente>(
+        endpoint,
+        ingrediente
+      );
 
-export const createIngrediente = async (ingrediente: Omit<IIngrediente, "id">): Promise<IIngrediente> => {
-    try {
-        const response = await fetch(endpoint, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(ingrediente)
-        });
+    return response.data;
+  } catch (error) {
+    console.log(
+      "Error creando ingrediente:",
+      error
+    );
+    throw error;
+  }
+};
 
-        if (!response.ok) {
-            throw new Error("Error creando ingrediente");
-        }
+export const updateIngrediente = async (
+  id: number,
+  ingrediente: UpdateIngrediente
+): Promise<IIngrediente> => {
+  try {
+    const response =
+      await apiClient.patch<IIngrediente>(
+        `${endpoint}/${id}`,
+        ingrediente
+      );
 
-        const data: IIngrediente = await response.json();
-        return data;
-    } catch (error) {
-        console.log("Error creando ingrediente:", error);
-        throw error;
-    }
-}
+    return response.data;
+  } catch (error) {
+    console.log(
+      "Error actualizando ingrediente:",
+      error
+    );
+    throw error;
+  }
+};
 
-
-export const deleteIngrediente = async (id: number): Promise<void> => {
-    try {
-        const response = await fetch(`${endpoint}/${id}`, {
-            method: "DELETE"
-        });
-
-        if (!response.ok) {
-            throw new Error("Error eliminando ingrediente");
-        }
-    } catch (error) {
-        console.log("Error eliminando ingrediente:", error);
-        throw error;
-    }
-}
-
-export const updateIngrediente = async (id: number, ingrediente: Omit<IIngrediente, "id">): Promise<IIngrediente> => {
-    try {
-        const response = await fetch(`${endpoint}/${id}`, {
-            method: "PATCH",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(ingrediente)
-        });
-
-        if (!response.ok) {
-            throw new Error("Error actualizando ingrediente");
-        }
-
-        const data: IIngrediente = await response.json();
-        return data;
-    } catch (error) {
-        console.log("Error actualizando ingrediente:", error);
-        throw error;
-    }
-}
+export const deleteIngrediente = async (
+  id: number
+): Promise<void> => {
+  try {
+    await apiClient.delete(
+      `${endpoint}/${id}`
+    );
+  } catch (error) {
+    console.log(
+      "Error eliminando ingrediente:",
+      error
+    );
+    throw error;
+  }
+};

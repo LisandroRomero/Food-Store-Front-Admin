@@ -1,6 +1,6 @@
 import type {
   IIngrediente,
-  CreateIngrediente,
+  UpdateIngrediente,
 } from "../../types/ingredientes.type";
 
 import IngredienteForm from "../../components/IngredienteForm";
@@ -15,7 +15,7 @@ type Props = {
 
   onUpdate: (
     id: number,
-    data: CreateIngrediente
+    data: UpdateIngrediente
   ) => void;
 };
 
@@ -26,7 +26,7 @@ const IngredienteUpdateModal = ({
   onUpdate,
 }: Props) => {
   const handleSubmit = (
-    values: CreateIngrediente
+    values: UpdateIngrediente
   ) => {
     onUpdate(ingrediente.id, values);
 
@@ -40,11 +40,18 @@ const IngredienteUpdateModal = ({
       title="Editar ingrediente"
     >
       <IngredienteForm
-        defaultValues={ingrediente}
+        defaultValues={{
+          nombre: ingrediente.nombre,
+          descripcion:
+            ingrediente.descripcion,
+          es_alergeno:
+            ingrediente.es_alergeno,
+        }}
         onSubmit={handleSubmit}
+        submitText="Actualizar"
       />
     </Modal>
   );
-}
+};
 
 export default IngredienteUpdateModal;
