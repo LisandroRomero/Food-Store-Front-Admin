@@ -198,7 +198,7 @@ export default function UsersTable() {
     }: {
       userId: number;
       codigo_rol: UserRole;
-    }) => assignRole(userId, { codigo_rol }),
+    }) => assignRole(userId, { rol: codigo_rol }),
   });
 
   // REMOVE ROLE
@@ -209,7 +209,7 @@ export default function UsersTable() {
     }: {
       userId: number;
       codigo_rol: UserRole;
-    }) => removeRole(userId, { codigo_rol }),
+    }) => removeRole(userId, { rol: codigo_rol }),
   });
 
   // DELETE

@@ -47,7 +47,7 @@ export default function UsersForm({
   isPending = false,
   error = null,
 }: Props) {
-  const form = useForm<FormValues>({
+  const form = useForm({
     defaultValues: {
       nombre: initial?.nombre ?? "",
       apellido: initial?.apellido ?? "",
@@ -57,7 +57,7 @@ export default function UsersForm({
       activo: initial?.activo ?? true,
       roles:
         initial?.roles?.map((r) => r.codigo) ?? [],
-    },
+    } as FormValues,
     onSubmit: async ({ value }) => {
       if (initial) {
         // UPDATE
@@ -77,6 +77,7 @@ export default function UsersForm({
           celular: value.celular,
           email: value.email,
           password: value.password,
+          roles: value.roles,
         };
 
         onSubmit(data, value.roles);
