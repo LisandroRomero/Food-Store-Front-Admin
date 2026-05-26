@@ -8,7 +8,7 @@ import type {
   UserPublic,
 } from "../types/users.types";
 
-const endpoint = `${API_BASE_URL}/usuarios`;
+const endpoint = `${API_BASE_URL}/auth`;
 
 export interface TokenResponse {
   access_token: string;
@@ -133,15 +133,18 @@ export const requestUserById = async (
   accessToken: string
 ): Promise<UserPublic> => {
   try {
-    const response = await fetch(`${endpoint}/${userId}`, {
-      method: "GET",
+    const response = await fetch(
+      `${API_BASE_URL}/usuarios/${userId}`,
+      {
+        method: "GET",
 
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
 
-      credentials: "include",
-    });
+        credentials: "include",
+      }
+    );
 
     if (!response.ok) {
       throw new Error("Error obteniendo usuario");

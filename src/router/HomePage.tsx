@@ -22,76 +22,52 @@ export default function HomePage() {
       description:
         "Gestionar ingredientes",
     },
+    {
+      title: "Pedidos",
+      path: "/pedidos",
+      description:
+        "Gestionar pedidos",
+    },
+    {
+      title: "Usuarios",
+      path: "/usuarios",
+      description:
+        "Gestionar usuarios del sistema",
+    },
   ];
 
   return (
-    <div
-      className="
-        min-h-screen
-        bg-slate-950
-        text-slate-100
-        p-8
-      "
-    >
-      {/* HEADER */}
-      <div className="mb-10">
-        <h1
-          className="
-            text-4xl
-            font-bold
-            mb-2
-          "
-        >
-          Panel principal
-        </h1>
+    <section className="min-h-screen bg-gray-50 p-6 lg:p-8">
+      <div className="max-w-7xl mx-auto">
+        {/* HEADER */}
+        <div className="mb-10">
+          <h1 className="text-3xl font-bold mb-2">
+            Panel principal
+          </h1>
+          <p className="text-gray-500">
+            Seleccioná una sección
+          </p>
+        </div>
 
-        <p className="text-slate-400">
-          Seleccioná una sección
-        </p>
-      </div>
-
-      {/* CARDS */}
-      <div
-        className="
-          grid
-          grid-cols-1
-          md:grid-cols-2
-          lg:grid-cols-3
-          gap-6
-        "
-      >
-        {routes.map((route) => (
-          <Link
-            key={route.path}
-            to={route.path}
-            className="
-              bg-slate-900
-              rounded-2xl
-              shadow
-              p-6
-              hover:shadow-xl
-              hover:-translate-y-1
-              transition
-              border
-              border-slate-800
-            "
-          >
-            <h2
+        {/* CARDS */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {routes.map((route) => (
+            <Link
+              key={route.path}
+              to={route.path}
               className="
-                text-2xl
-                font-semibold
-                mb-2
+                bg-white rounded-2xl shadow-sm border border-gray-200 p-6
+                hover:shadow-md hover:-translate-y-1 transition
               "
             >
-              {route.title}
-            </h2>
-
-            <p className="text-slate-400">
-              {route.description}
-            </p>
-          </Link>
-        ))}
+              <h2 className="text-xl font-semibold mb-2 text-gray-900">
+                {route.title}
+              </h2>
+              <p className="text-gray-500">{route.description}</p>
+            </Link>
+          ))}
+        </div>
       </div>
-    </div>
+    </section>
   );
 }

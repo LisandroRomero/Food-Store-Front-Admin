@@ -61,8 +61,8 @@ export default function PedidosKanbanPage() {
   ========================= */
 
   return (
-    <div className="h-screen overflow-x-auto bg-gray-100 p-6 text-gray-800">
-      <h1 className="mb-6 text-3xl font-bold">
+    <section className="h-full overflow-x-auto p-6 lg:p-8">
+      <h1 className="mb-6 text-2xl font-bold">
         Pedidos
       </h1>
 
@@ -190,6 +190,6 @@ export default function PedidosKanbanPage() {
           )
         )}
       </div>
-    </div>
+    </section>
   );
 }

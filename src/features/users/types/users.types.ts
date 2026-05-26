@@ -16,8 +16,9 @@ export interface UserPublic {
   apellido: string;
   celular: string;
   activo: boolean;
+  email: string;
   roles: Rol[];
-}
+} 
 
 export interface RegisterUserDto {
   nombre: string;
@@ -30,4 +31,30 @@ export interface RegisterUserDto {
 export interface LoginUserDto {
   email: string;
   password: string;
+}
+
+
+
+export interface IUserCreate {
+  nombre: string;
+  apellido: string;
+  celular: string;
+  email: string;
+  password: string;
+  roles: UserRole[];
+}
+
+export interface IUserUpdate {
+  nombre?: string;
+  apellido?: string;
+  celular?: string;
+  email?: string;
+  password?: string;
+  roles?: UserRole[];
+  activo?: boolean;
+}
+
+export interface IUserPaginado {
+  total: number;
+  data: UserPublic[];
 }

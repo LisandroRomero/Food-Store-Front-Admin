@@ -15,6 +15,7 @@ import LoginPage from "../features/users/pages/LoginPage";
 
 import AdminLayout from "../shared/AdminLayout";
 import PedidosKanbanPage from "../features/ordenes/pages/PedidosKanbanPage";
+import UsersPage from "../features/users/pages/UsersPage";
 import ProtectedRoute from "../router/ProtectedRoutes";
 
 const AppRouter = () => {
@@ -66,6 +67,14 @@ const AppRouter = () => {
           element={
             <AdminLayout>
               <PedidosKanbanPage />
+            </AdminLayout>
+          }
+        />
+        <Route
+          path="/usuarios"
+          element={
+            <AdminLayout>
+              <UsersPage />
             </AdminLayout>
           }
         />
