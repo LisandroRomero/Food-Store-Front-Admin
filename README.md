@@ -5,6 +5,7 @@ Vivas Pablo -
 Diaz Moyano Sebastian
 --
 Link de los repositorios:
+--
 Backend: https://github.com/PabloAVivas/Parcial2Prog4
 Front admin: https://github.com/LisandroRomero/Food-Store-Front-Admin
 Front store: https://github.com/LisandroRomero/Food-Store-Front-Store
@@ -21,4 +22,5 @@ Contribute to LisandroRomero/Food-Store-Front-Store development by creating an a
 GitHub - LisandroRomero/Food-Store-Front-Store
 
 Link de video
+--
 https://youtu.be/BKPTDvoGfu0
