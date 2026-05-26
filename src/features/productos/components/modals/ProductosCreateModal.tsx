@@ -34,7 +34,7 @@ export default function ProductosCreateModal({
 }: Props) {
 
   const {
-    data: categorias,
+    data: categoriasResp,
     isLoading: categoriasLoading,
   } = useQuery({
     queryKey: ["categorias"],
@@ -42,12 +42,15 @@ export default function ProductosCreateModal({
   });
 
   const {
-    data: ingredientes,
+    data: ingredientesResp,
     isLoading: ingredientesLoading,
   } = useQuery({
     queryKey: ["ingredientes"],
     queryFn: getIngredientes,
   });
+
+  const categorias = categoriasResp?.data ?? [];
+  const ingredientes = ingredientesResp?.data ?? [];
 
   if (!open) return null;
 

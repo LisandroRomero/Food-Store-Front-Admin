@@ -1,28 +1,34 @@
 import { useForm } from "@tanstack/react-form";
 
-import type { CreateCategoria } from "../types/categorias.types";
+import type {
+  ICategoria,
+  ICategoriaCreate,
+  ICategoriaUpdate,
+} from "../types/categorias.types";
 
 type Props = {
-  defaultValues?: CreateCategoria;
+  initial?: ICategoria | null;
 
-  onSubmit: (values: CreateCategoria) => void;
+  onSubmit: (
+    values: ICategoriaCreate | ICategoriaUpdate
+  ) => void;
+
+  isPending?: boolean;
+  error?: string | null;
 };
 
-export default function CategoriaForm({
-  defaultValues,
+const CategoriaForm = ({
+  initial,
   onSubmit,
-}: Props) {
+  isPending = false,
+  error = null,
+}: Props) => {
   const form = useForm({
     defaultValues: {
-      nombre: defaultValues?.nombre ?? "",
-
-      descripcion:
-        defaultValues?.descripcion ?? "",
-
-      imagen_url: defaultValues?.imagen_url ?? "",
-
-      parent_id:
-        defaultValues?.parent_id ?? null,
+      nombre: initial?.nombre ?? "",
+      descripcion: initial?.descripcion ?? "",
+      imagen_url: initial?.imagen_url ?? "",
+      parent_id: initial?.parent_id ?? null,
     },
 
     onSubmit: async ({ value }) => {
@@ -30,128 +36,143 @@ export default function CategoriaForm({
     },
   });
 
+  const inputClass =
+    "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 outline-none";
+
   return (
     <form
       onSubmit={(e) => {
         e.preventDefault();
-
+        e.stopPropagation();
         form.handleSubmit();
       }}
-      className="flex flex-col gap-4"
+      className="space-y-4"
     >
-      {/* Nombre */}
-      <form.Field name="nombre">
+      {error && (
+        <p className="text-sm text-red-600 bg-red-50 p-2 rounded">
+          {error}
+        </p>
+      )}
+
+      <form.Field
+        name="nombre"
+        validators={{
+          onChange: ({ value }) =>
+            !value.trim()
+              ? "El nombre es obligatorio"
+              : undefined,
+        }}
+      >
         {(field) => (
-          <div className="flex flex-col gap-1">
-            <label className="font-medium">
+          <div>
+            <label className="block text-xs font-medium text-gray-500 mb-1">
               Nombre
             </label>
-
             <input
+              className={inputClass}
               value={field.state.value}
-              onChange={(e) =>
-                field.handleChange(
-                  e.target.value
-                )
-              }
-              placeholder="Nombre"
-              className="
-                border
-                border-gray-300
-                rounded-lg
-                px-3
-                py-2
-              "
+              onBlur={field.handleBlur}
+              onChange={(e) => field.handleChange(e.target.value)}
             />
+            {field.state.meta.errors.length > 0 && (
+              <p className="text-sm text-red-500 mt-1">
+                {field.state.meta.errors[0]}
+              </p>
+            )}
           </div>
         )}
       </form.Field>
 
-      {/* Descripción */}
-      <form.Field name="descripcion">
+      <form.Field
+        name="descripcion"
+        validators={{
+          onChange: ({ value }) =>
+            !value.trim()
+              ? "La descripción es obligatoria"
+              : undefined,
+        }}
+      >
         {(field) => (
-          <div className="flex flex-col gap-1">
-            <label className="font-medium">
+          <div>
+            <label className="block text-xs font-medium text-gray-500 mb-1">
               Descripción
             </label>
-
-            <input
+            <textarea
+              className={inputClass}
               value={field.state.value}
-              onChange={(e) =>
-                field.handleChange(
-                  e.target.value
-                )
-              }
-              placeholder="Descripción"
-              className="
-                border
-                border-gray-300
-                rounded-lg
-                px-3
-                py-2
-              "
+              onBlur={field.handleBlur}
+              onChange={(e) => field.handleChange(e.target.value)}
+              rows={3}
             />
+            {field.state.meta.errors.length > 0 && (
+              <p className="text-sm text-red-500 mt-1">
+                {field.state.meta.errors[0]}
+              </p>
+            )}
           </div>
         )}
       </form.Field>
 
-      {/* Imagen URL */}
       <form.Field name="imagen_url">
         {(field) => (
-          <input type="hidden" value={field.state.value} readOnly />
-        )}
-      </form.Field>
-
-      {/* Parent ID */}
-      <form.Field name="parent_id">
-        {(field) => (
-          <div className="flex flex-col gap-1">
-            <label className="font-medium">
-              Categoría padre
+          <div>
+            <label className="block text-xs font-medium text-gray-500 mb-1">
+              URL de imagen
             </label>
-
             <input
-              type="number"
-              value={
-                field.state.value ?? ""
-              }
-              onChange={(e) => {
-                const value =
-                  e.target.value;
-
-                field.handleChange(
-                  value === ""
-                    ? null
-                    : Number(value)
-                );
-              }}
-              placeholder="Parent ID"
-              className="
-                border
-                border-gray-300
-                rounded-lg
-                px-3
-                py-2
-              "
+              className={inputClass}
+              value={field.state.value}
+              onBlur={field.handleBlur}
+              onChange={(e) => field.handleChange(e.target.value)}
+              placeholder="https://..."
             />
           </div>
         )}
       </form.Field>
 
-      {/* Submit */}
+      <form.Field name="parent_id">
+        {(field) => (
+          <div>
+            <label className="block text-xs font-medium text-gray-500 mb-1">
+              Categoría padre (ID)
+            </label>
+            <input
+              type="number"
+              className={inputClass}
+              value={field.state.value ?? ""}
+              onChange={(e) => {
+                const value = e.target.value;
+                field.handleChange(value === "" ? null : Number(value));
+              }}
+              placeholder="ID de categoría padre"
+            />
+          </div>
+        )}
+      </form.Field>
+
       <button
         type="submit"
+        disabled={isPending}
         className="
-          bg-blue-500
-          hover:bg-blue-600
+          w-full
+          bg-blue-600
           text-white
+          font-semibold
           py-2
           rounded-lg
-          transition
+          hover:bg-blue-700
+          transition-colors
+          disabled:opacity-50
         "
       >
-        Guardar
+        {isPending
+          ? "Guardando..."
+          : initial
+          ? "Actualizar"
+          : "Crear"}
       </button>
     </form>
   );
-}
+};
+
+export default CategoriaForm;

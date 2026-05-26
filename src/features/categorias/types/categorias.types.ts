@@ -6,9 +6,21 @@ export interface ICategoria {
   parent_id: number | null;
 }
 
-export interface ICategoriaResponse {
-  data: ICategoria[];
-  total: number;
-};
+export interface ICategoriaCreate {
+  nombre: string;
+  descripcion: string;
+  imagen_url?: string;
+  parent_id?: number | null;
+}
 
-export type CreateCategoria = Omit<ICategoria, "id">
+export interface ICategoriaUpdate {
+  nombre?: string;
+  descripcion?: string;
+  imagen_url?: string;
+  parent_id?: number | null;
+}
+
+export interface ICategoriaPaginado {
+  total: number;
+  data: ICategoria[];
+}

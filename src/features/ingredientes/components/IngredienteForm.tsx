@@ -1,36 +1,37 @@
 import { useForm } from "@tanstack/react-form";
 
 import type {
-  CreateIngrediente,
-  UpdateIngrediente,
+  IIngrediente,
+  IIngredienteCreate,
+  IIngredienteUpdate,
 } from "../types/ingredientes.type";
 
 type Props = {
-  defaultValues?:
-    | CreateIngrediente
-    | UpdateIngrediente;
+  initial?: IIngrediente | null;
 
   onSubmit: (
     values:
-      | CreateIngrediente
-      | UpdateIngrediente
+      | IIngredienteCreate
+      | IIngredienteUpdate
   ) => void;
 
-  submitText?: string;
+  isPending?: boolean;
+  error?: string | null;
 };
 
 const IngredienteForm = ({
-  defaultValues,
+  initial,
   onSubmit,
-  submitText = "Guardar",
+  isPending = false,
+  error = null,
 }: Props) => {
   const form = useForm({
     defaultValues: {
-      nombre: defaultValues?.nombre ?? "",
+      nombre: initial?.nombre ?? "",
       descripcion:
-        defaultValues?.descripcion ?? "",
+        initial?.descripcion ?? "",
       es_alergeno:
-        defaultValues?.es_alergeno ?? false,
+        initial?.es_alergeno ?? false,
     },
 
     onSubmit: async ({ value }) => {
@@ -38,120 +39,182 @@ const IngredienteForm = ({
     },
   });
 
+  const inputClass =
+    "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 outline-none";
+
   return (
     <form
       onSubmit={(e) => {
         e.preventDefault();
         e.stopPropagation();
+
         form.handleSubmit();
       }}
-      className="flex flex-col gap-4"
+      className="space-y-4"
     >
-      {/* Nombre */}
+      {error && (
+        <p className="text-sm text-red-600 bg-red-50 p-2 rounded">
+          {error}
+        </p>
+      )}
+
       <form.Field
         name="nombre"
         validators={{
-          onChange: ({ value }) =>
-            !value
+          onChange: ({
+            value,
+          }) =>
+            !value.trim()
               ? "El nombre es obligatorio"
               : undefined,
         }}
       >
         {(field) => (
-          <div className="flex flex-col gap-1">
-            <label className="font-medium">
+          <div>
+            <label
+              className="
+                block
+                text-xs
+                font-medium
+                text-gray-500
+                mb-1
+              "
+            >
               Nombre
             </label>
 
             <input
-              value={field.state.value}
+              className={inputClass}
+              value={
+                field.state.value
+              }
+              onBlur={
+                field.handleBlur
+              }
               onChange={(e) =>
                 field.handleChange(
                   e.target.value
                 )
               }
-              placeholder="Ingrese un nombre"
-              className="border rounded-lg px-3 py-2"
             />
 
-            {field.state.meta.errors.length >
-              0 && (
-              <span className="text-red-500 text-sm">
+            {field.state.meta.errors
+              .length > 0 && (
+              <p className="text-sm text-red-500 mt-1">
                 {
-                  field.state.meta.errors[0]
+                  field.state.meta
+                    .errors[0]
                 }
-              </span>
+              </p>
             )}
           </div>
         )}
       </form.Field>
 
-      {/* Descripción */}
       <form.Field
         name="descripcion"
         validators={{
-          onChange: ({ value }) =>
-            !value
+          onChange: ({
+            value,
+          }) =>
+            !value.trim()
               ? "La descripción es obligatoria"
               : undefined,
         }}
       >
         {(field) => (
-          <div className="flex flex-col gap-1">
-            <label className="font-medium">
+          <div>
+            <label
+              className="
+                block
+                text-xs
+                font-medium
+                text-gray-500
+                mb-1
+              "
+            >
               Descripción
             </label>
 
             <textarea
-              value={field.state.value}
+              className={inputClass}
+              value={
+                field.state.value
+              }
+              onBlur={
+                field.handleBlur
+              }
               onChange={(e) =>
                 field.handleChange(
                   e.target.value
                 )
               }
-              placeholder="Ingrese una descripción"
-              rows={4}
-              className="border rounded-lg px-3 py-2 resize-none"
+              rows={3}
             />
 
-            {field.state.meta.errors.length >
-              0 && (
-              <span className="text-red-500 text-sm">
+            {field.state.meta.errors
+              .length > 0 && (
+              <p className="text-sm text-red-500 mt-1">
                 {
-                  field.state.meta.errors[0]
+                  field.state.meta
+                    .errors[0]
                 }
-              </span>
+              </p>
             )}
           </div>
         )}
       </form.Field>
 
-      {/* Es alérgeno */}
       <form.Field name="es_alergeno">
         {(field) => (
           <label className="flex items-center gap-2 cursor-pointer">
             <input
               type="checkbox"
-              checked={field.state.value}
+              checked={
+                field.state.value
+              }
               onChange={(e) =>
                 field.handleChange(
                   e.target.checked
                 )
               }
-              className="w-4 h-4"
+              className="w-4 h-4 text-blue-600"
             />
 
-            <span>Es alérgeno</span>
+            <span
+              className="
+                text-sm
+                text-gray-700
+                font-medium
+              "
+            >
+              Contiene
+              Alérgenos
+            </span>
           </label>
         )}
       </form.Field>
 
-      {/* Botón */}
       <button
         type="submit"
-        className="bg-blue-500 hover:bg-blue-600 transition-colors text-white py-2 rounded-lg"
+        disabled={isPending}
+        className="
+          w-full
+          bg-blue-600
+          text-white
+          font-semibold
+          py-2
+          rounded-lg
+          hover:bg-blue-700
+          transition-colors
+          disabled:opacity-50
+        "
       >
-        {submitText}
+        {isPending
+          ? "Guardando..."
+          : initial
+          ? "Actualizar"
+          : "Crear"}
       </button>
     </form>
   );

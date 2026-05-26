@@ -1,6 +1,8 @@
-export interface IProductoBasic {
+export interface IIngredienteProductoBasic {
   id: number;
   nombre: string;
+  precio_base: number;
+  stock_cantidad: number;
 }
 
 export interface IIngrediente {
@@ -11,22 +13,22 @@ export interface IIngrediente {
   activo: boolean;
   created_at: string;
   updated_at: string;
-  producto_links?: IProductoBasic[];
+  producto_links: IIngredienteProductoBasic[];
 }
 
-export interface IIngredienteResponse {
-  total: number;
-  data: IIngrediente[];
-}
-
-export interface CreateIngrediente {
+export interface IIngredienteCreate {
   nombre: string;
   descripcion: string;
   es_alergeno?: boolean;
 }
 
-export interface UpdateIngrediente {
+export interface IIngredienteUpdate {
   nombre?: string;
   descripcion?: string;
   es_alergeno?: boolean;
+}
+
+export interface IIngredientePaginado {
+  total: number;
+  data: IIngrediente[];
 }

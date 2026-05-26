@@ -14,13 +14,13 @@ import HomePage from "./HomePage";
 import LoginPage from "../features/users/pages/LoginPage";
 
 import AdminLayout from "../shared/AdminLayout";
-
+import PedidosKanbanPage from "../features/ordenes/pages/PedidosKanbanPage";
 import ProtectedRoute from "../router/ProtectedRoutes";
 
 const AppRouter = () => {
   return (
     <Routes>
-      {/* PUBLICAS */}
+      
 
       <Route
         path="/"
@@ -58,6 +58,14 @@ const AppRouter = () => {
           element={
             <AdminLayout>
               <IngredientePage />
+            </AdminLayout>
+          }
+        />
+        <Route
+          path="/pedidos"
+          element={
+            <AdminLayout>
+              <PedidosKanbanPage />
             </AdminLayout>
           }
         />

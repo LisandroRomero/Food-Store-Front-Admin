@@ -1,62 +1,38 @@
-type ModalProps = {
-  isOpen: boolean;
+import { useEffect, useRef } from "react";
+
+interface ModalProps {
+  open: boolean;
   onClose: () => void;
-  title?: string;
+  title: string;
   children: React.ReactNode;
-};
-
-const Modal = ({
-  isOpen,
-  onClose,
-  title,
-  children,
-}: ModalProps) => {
-
-  if (!isOpen) return null;
-
-  return (
-    
-    <div
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-      onClick={onClose}
-    >
-
-      <div
-        className="bg-slate-900 text-slate-100 w-full max-w-md rounded-2xl shadow-xl p-6 relative border border-slate-800"
-        onClick={(e) => e.stopPropagation()}
-      >
-
-        <div className="flex items-center justify-between mb-4">
-          {title && (
-            <h2 className="text-xl font-semibold">
-              {title}
-            </h2>
-          )}
-
-          <button
-            onClick={onClose}
-            className="text-slate-400 hover:text-slate-100 transition"
-          >
-            ✕
-          </button>
-        </div>
-       
-        <div className="mb-6">
-          {children}
-        </div>
-
-        <div className="flex justify-end">
-          <button
-            onClick={onClose}
-            className="bg-slate-800 hover:bg-slate-700 text-slate-200 px-4 py-2 rounded-lg transition"
-          >
-            Cancelar
-          </button>
-        </div>
-      </div>
-    </div>
-  );
 }
 
+export default function Modal({ open, onClose, title, children }: ModalProps) {
+  const dialogRef = useRef<HTMLDialogElement>(null);
 
-export default Modal;
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    if (open) {
+      dialog.showModal();
+    } else {
+      dialog.close();
+    }
+  }, [open]);
+
+  return (
+    <dialog
+      ref={dialogRef}
+      onClose={onClose}
+      className="backdrop:bg-black/40 rounded-xl border border-gray-200 p-0 w-full max-w-lg shadow-xl fixed inset-0 m-auto"
+    >
+      <header className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+        <h2 className="text-lg font-semibold text-gray-800">{title}</h2>
+        <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-xl leading-none cursor-pointer">
+          x
+        </button>
+      </header>
+      <section className="px-6 py-4 max-h-[80vh] overflow-y-auto">{children}</section>
+    </dialog>
+  );
+}

@@ -54,9 +54,9 @@ export const useCatalogosStore =
 
             set({
               categorias:
-                categoriasResponse,
+                categoriasResponse.data,
               ingredientes:
-                ingredientesResponse,
+                ingredientesResponse.data,
             });
           } catch (error) {
             console.error(

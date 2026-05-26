@@ -15,20 +15,24 @@ const endpoint = "/productos";
    GET ALL
 ========================= */
 export const getProducts = async (
-  filters?: ProductoFilters
-): Promise<Producto[]> => {
+  offset = 0,
+  limit = 20,
+  nombre?: string
+): Promise<ProductosResponse> => {
   try {
     const response =
       await apiClient.get<ProductosResponse>(
         endpoint,
         {
-          params: filters,
+          params: {
+            offset,
+            limit,
+            ...(nombre && { nombre }),
+          },
         }
       );
 
-    return (
-      response.data.data ?? []
-    );
+    return response.data;
   } catch (error) {
     console.error(
       "Error trayendo productos:",

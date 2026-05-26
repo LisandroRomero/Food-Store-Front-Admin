@@ -34,6 +34,43 @@ apiClient.interceptors.request.use(
 );
 
 apiClient.interceptors.response.use(
+  (response) => response, 
+  async (error) => {
+    const originalRequest = error.config;
+
+    
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true; 
+
+      try {
+        
+        const response = await axios.post(
+          "https://tu-api.com/api/auth/refresh", 
+          {}, 
+          { withCredentials: true } 
+        );
+
+        const newAccessToken = response.data.access_token;
+
+        
+        useAuthStore.setState({ accessToken: newAccessToken });
+
+        
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+        return apiClient(originalRequest);
+        
+      } catch (refreshError) {
+        
+        useAuthStore.getState().clearSession();
+        return Promise.reject(refreshError);
+      }
+    }
+
+    return Promise.reject(error);
+  }
+);
+
+apiClient.interceptors.response.use(
   (response: AxiosResponse) => {
     return response;
   },

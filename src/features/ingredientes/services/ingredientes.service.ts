@@ -1,24 +1,36 @@
 import type {
   IIngrediente,
-  IIngredienteResponse,
-  CreateIngrediente,
-  UpdateIngrediente,
+  IIngredienteCreate,
+  IIngredienteUpdate,
+  IIngredientePaginado,
 } from "../types/ingredientes.type";
 
 import { apiClient } from "../../../api/axiosInstance";
 
 const endpoint = "/ingredientes";
 
-export const getIngredientes = async (): Promise<
-  IIngrediente[]
-> => {
+/* =========================
+   GET ALL
+========================= */
+export const getIngredientes = async (
+  offset = 0,
+  limit = 20,
+  nombre?: string
+): Promise<IIngredientePaginado> => {
   try {
     const response =
-      await apiClient.get<IIngredienteResponse>(
-        endpoint
+      await apiClient.get<IIngredientePaginado>(
+        endpoint,
+        {
+          params: {
+            offset,
+            limit,
+            ...(nombre && { nombre }),
+          },
+        }
       );
 
-    return response.data.data;
+    return response.data;
   } catch (error) {
     console.log(
       "Error trayendo ingredientes:",
@@ -28,13 +40,38 @@ export const getIngredientes = async (): Promise<
   }
 };
 
+/* =========================
+   GET BY ID
+========================= */
+export const getIngredienteById = async (
+  id: number
+): Promise<IIngrediente> => {
+  try {
+    const response =
+      await apiClient.get<IIngrediente>(
+        `${endpoint}/${id}`
+      );
+
+    return response.data;
+  } catch (error) {
+    console.log(
+      "Error trayendo ingrediente:",
+      error
+    );
+    throw error;
+  }
+};
+
+/* =========================
+   CREATE
+========================= */
 export const createIngrediente = async (
-  ingrediente: CreateIngrediente
+  ingrediente: IIngredienteCreate
 ): Promise<IIngrediente> => {
   try {
     const response =
       await apiClient.post<IIngrediente>(
-        endpoint,
+        `${endpoint}/`,
         ingrediente
       );
 
@@ -48,9 +85,12 @@ export const createIngrediente = async (
   }
 };
 
+/* =========================
+   UPDATE
+========================= */
 export const updateIngrediente = async (
   id: number,
-  ingrediente: UpdateIngrediente
+  ingrediente: IIngredienteUpdate
 ): Promise<IIngrediente> => {
   try {
     const response =
@@ -69,6 +109,9 @@ export const updateIngrediente = async (
   }
 };
 
+/* =========================
+   DELETE
+========================= */
 export const deleteIngrediente = async (
   id: number
 ): Promise<void> => {

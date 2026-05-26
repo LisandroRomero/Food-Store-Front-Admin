@@ -1,4 +1,4 @@
-import type { CreateCategoria } from "../../types/categorias.types";
+import type { ICategoriaCreate } from "../../types/categorias.types";
 
 import CategoriaForm from "../CategoriasForm";
 
@@ -10,7 +10,7 @@ type Props = {
   onClose: () => void;
 
   onCreate: (
-    data: CreateCategoria
+    data: ICategoriaCreate
   ) => void;
 };
 
@@ -20,7 +20,7 @@ const CategoriasCreateModal =({
   onCreate,
 }: Props) =>{
   const handleSubmit = (
-    values: CreateCategoria
+    values: ICategoriaCreate
   ) => {
     onCreate(values);
 

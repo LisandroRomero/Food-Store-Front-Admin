@@ -1,7 +1,11 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuthStore } from "../features/users/store/useAuthStore";
 
 export default function Sidebar() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const logout = useAuthStore((state) => state.logout);
+  const user = useAuthStore((state) => state.user);
 
   const links = [
     {
@@ -22,6 +26,10 @@ export default function Sidebar() {
     {
       label: "Ingredientes",
       path: "/ingredientes",
+    },
+    {
+      label: "Pedidos",
+      path: "/pedidos",
     },
   ];
 
@@ -100,6 +108,28 @@ export default function Sidebar() {
           );
         })}
       </nav>
+
+      {/* SPACER */}
+      <div className="flex-1" />
+
+      {/* BOTTOM: user info + logout */}
+      <div className="border-t border-slate-800 pt-4 space-y-3">
+        {user && (
+          <p className="text-sm text-slate-400 px-4 truncate">
+            {user.nombre} {user.apellido}
+          </p>
+        )}
+
+        <button
+          onClick={async () => {
+            await logout();
+            navigate("/login");
+          }}
+          className="w-full px-4 py-3 rounded-xl transition text-left text-sm text-red-400 hover:bg-slate-900 hover:text-red-300"
+        >
+          Cerrar sesión
+        </button>
+      </div>
     </aside>
   );
 }

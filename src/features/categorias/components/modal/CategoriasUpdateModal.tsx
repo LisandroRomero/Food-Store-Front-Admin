@@ -1,6 +1,6 @@
 import type {
   ICategoria,
-  CreateCategoria,
+  ICategoriaCreate,
 } from "../../types/categorias.types";
 
 import CategoriaForm from "../CategoriasForm";
@@ -16,13 +16,13 @@ type Props = {
 
   onUpdate: (
     id: number,
-    data: CreateCategoria
+    data: ICategoriaCreate
   ) => void;
 };
 
 const CategoriasUpdateModal = ({ isOpen, categoria, onClose, onUpdate }: Props) => {
   const handleSubmit = (
-    values: CreateCategoria
+    values: ICategoriaCreate
   ) => {
     onUpdate(categoria.id, values);
 
@@ -36,10 +36,10 @@ const CategoriasUpdateModal = ({ isOpen, categoria, onClose, onUpdate }: Props) 
       title="Editar categoría"
     >
       <CategoriaForm
-        defaultValues={categoria}
+        initial={categoria}
         onSubmit={handleSubmit}
       />
     </Modal>
   );
 }
-export default CategoriaUpdateModal;
+export default CategoriasUpdateModal;
