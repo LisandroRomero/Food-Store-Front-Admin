@@ -12,10 +12,7 @@ type IUserRoleAction = {
   rol: UserRole;
 };
 
-/* =========================
-   GET ALL (admin — paginated)
-   GET /admin/usuarios?offset&limit&rol
-========================= */
+
 export const getUsers = async (
   offset = 0,
   limit = 20,
@@ -39,10 +36,7 @@ export const getUsers = async (
   }
 };
 
-/* =========================
-   GET BY ID
-   GET /usuarios/{id}
-========================= */
+
 export const getUserById = async (
   id: number
 ): Promise<UserPublic> => {
@@ -57,10 +51,7 @@ export const getUserById = async (
   }
 };
 
-/* =========================
-   CREATE (via register)
-   POST /auth/register
-========================= */
+
 export const createUser = async (
   data: IUserCreate
 ): Promise<UserPublic> => {
@@ -76,10 +67,7 @@ export const createUser = async (
   }
 };
 
-/* =========================
-   UPDATE
-   PATCH /usuarios/{id}
-========================= */
+
 export const updateUser = async (
   id: number,
   data: IUserUpdate

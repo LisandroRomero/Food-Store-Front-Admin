@@ -9,9 +9,7 @@ import { apiClient } from "../../../api/axiosInstance";
 
 const endpoint = "/ingredientes";
 
-/* =========================
-   GET ALL
-========================= */
+
 export const getIngredientes = async (
   offset = 0,
   limit = 20,
@@ -40,9 +38,7 @@ export const getIngredientes = async (
   }
 };
 
-/* =========================
-   GET BY ID
-========================= */
+
 export const getIngredienteById = async (
   id: number
 ): Promise<IIngrediente> => {
@@ -62,9 +58,7 @@ export const getIngredienteById = async (
   }
 };
 
-/* =========================
-   CREATE
-========================= */
+
 export const createIngrediente = async (
   ingrediente: IIngredienteCreate
 ): Promise<IIngrediente> => {
@@ -85,9 +79,7 @@ export const createIngrediente = async (
   }
 };
 
-/* =========================
-   UPDATE
-========================= */
+
 export const updateIngrediente = async (
   id: number,
   ingrediente: IIngredienteUpdate
@@ -109,9 +101,7 @@ export const updateIngrediente = async (
   }
 };
 
-/* =========================
-   DELETE
-========================= */
+
 export const deleteIngrediente = async (
   id: number
 ): Promise<void> => {

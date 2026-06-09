@@ -23,10 +23,6 @@ const AppRouter = () => {
     <Routes>
       
 
-      <Route
-        path="/"
-        element={<HomePage />}
-      />
 
       <Route
         path="/login"
@@ -44,6 +40,10 @@ const AppRouter = () => {
             </AdminLayout>
           }
         />
+          <Route
+            path="/"
+            element={<HomePage />}
+          />
 
         <Route
           path="/categorias"

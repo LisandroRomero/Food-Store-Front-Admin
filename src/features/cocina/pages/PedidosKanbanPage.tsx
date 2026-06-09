@@ -2,7 +2,7 @@ import { useEffect, useMemo } from "react";
 import { usePedidosStore } from "../store/pedidos.store";
 import { PedidoColumn } from "../components/PedidoColumn";
 
-export default function PedidosKanbanPage() {
+export default function CocinaKanbanPage() {
   const {
     pedidos,
     loading,
@@ -16,18 +16,16 @@ export default function PedidosKanbanPage() {
 
   const groupedPedidos = useMemo(() => {
     return {
-      PENDIENTE: pedidos.filter(
-        (p) => p.estado_codigo === "PENDIENTE"
-      ),
+      
       CONFIRMADO: pedidos.filter(
         (p) => p.estado_codigo === "CONFIRMADO"
       ),
       EN_PREPARACION: pedidos.filter(
-        (p) =>  p.estado_codigo === "EN_PREPARACION"
-      ),
-      ENTREGADO: pedidos.filter(
-        (p) => p.estado_codigo === "ENTREGADO"
-      ),
+        (p) =>
+          p.estado_codigo ===
+          "EN_PREPARACION"
+      )
+     
     };
   }, [pedidos]);
 
