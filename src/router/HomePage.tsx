@@ -34,6 +34,12 @@ export default function HomePage() {
       description:
         "Gestionar usuarios del sistema",
     },
+    {
+      title: "Cocina",
+      path: "/cocina",
+      description:
+        "Gestionar pedidos en cocina",
+    },
   ];
 
   return (

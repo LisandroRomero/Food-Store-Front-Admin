@@ -1,6 +1,7 @@
 import { useEffect, useMemo } from "react";
 import { usePedidosStore } from "../store/pedidos.store";
 import { PedidoColumn } from "../components/PedidoColumn";
+import { usePedidosRealtime } from "../hooks/usePedidosRealTime";
 
 export default function PedidosKanbanPage() {
   const {
@@ -13,6 +14,8 @@ export default function PedidosKanbanPage() {
   useEffect(() => {
     loadPedidos();
   }, [loadPedidos]);
+  
+  usePedidosRealtime();
 
   const groupedPedidos = useMemo(() => {
     return {

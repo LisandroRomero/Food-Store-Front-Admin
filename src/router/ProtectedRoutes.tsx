@@ -2,10 +2,14 @@ import {
   Navigate,
   Outlet,
 } from "react-router-dom";
-
+import { type UserRole } from "../features/users/types/users.types";
 import { useAuthStore } from "../features/users/store/useAuthStore";
 
-export default function ProtectedRoute() {
+type Props = {
+  allowedRoles: UserRole[];
+};
+
+export default function ProtectedRoute({allowedRoles}:Props) {
   const isAuthenticated =
     useAuthStore(
       (state) => state.isAuthenticated
@@ -13,6 +17,9 @@ export default function ProtectedRoute() {
 
   const isLoading = useAuthStore(
     (state) => state.isLoading
+  );
+  const hasRole = useAuthStore(
+    (state) => state.hasRole
   );
 
   if (isLoading) {
@@ -30,6 +37,9 @@ export default function ProtectedRoute() {
         replace
       />
     );
+  }
+  if (!hasRole(...allowedRoles)) {
+    return <Navigate to="/forbidden" replace />;
   }
 
   return <Outlet />;

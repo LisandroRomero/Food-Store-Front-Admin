@@ -45,7 +45,7 @@ apiClient.interceptors.response.use(
       try {
         
         const response = await axios.post(
-          "https://tu-api.com/api/auth/refresh", 
+          `${API_BASE_URL}/auth/refresh`, 
           {}, 
           { withCredentials: true } 
         );

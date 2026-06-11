@@ -1,6 +1,8 @@
 import { useEffect, useRef, useCallback } from "react";
+import { WS_BASE_URL } from "../api/config";
 
-const WS_URL = "ws://localhost:8000/api/v1/cocina/ws";
+
+const WS_URL = WS_BASE_URL;
 
 export interface WsMessage {
   event: string;
@@ -188,10 +190,10 @@ export function useWebSocket({
    * específicamente a este socket, además de los eventos globales por rol.
    * Si el socket no está abierto la llamada es silenciosa (no lanza error).
    */
-  const subscribeToOrder = useCallback((orderId: number) => {
+  const subscribeToOrder = useCallback((pedido_id: number) => {
     if (wsRef.current?.readyState === WebSocket.OPEN) {
       wsRef.current.send(
-        JSON.stringify({ action: "subscribe-order", order_id: orderId }),
+        JSON.stringify({ action: "subscribe-pedido", pedido_id: pedido_id }),
       );
     }
   }, []);
@@ -201,10 +203,10 @@ export function useWebSocket({
    * Útil cuando un pedido llega a un estado terminal (entregado / cancelado)
    * y ya no necesita actualizaciones en tiempo real.
    */
-  const unsubscribeFromOrder = useCallback((orderId: number) => {
+  const unsubscribeFromOrder = useCallback((pedido_id: number) => {
     if (wsRef.current?.readyState === WebSocket.OPEN) {
       wsRef.current.send(
-        JSON.stringify({ action: "unsubscribe-order", order_id: orderId }),
+        JSON.stringify({ action: "unsubscribe-pedido", pedido_id: pedido_id }),
       );
     }
   }, []);

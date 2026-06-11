@@ -30,7 +30,7 @@ export async function requestRegister(
   payload: RegisterUserDto
 ): Promise<UserPublic> {
   const response = await apiClient.post<UserPublic>(
-    "/usuarios/register",
+    "/auth/register",
     payload
   );
   return response.data;
@@ -50,11 +50,24 @@ export async function requestUserById(
   );
   return response.data;
 }
+export async function requestMe(
+  accessToken: string
+): Promise<UserPublic> {
+  const response = await apiClient.get<UserPublic>(
+    `/auth/me`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  );
+  return response.data;
+}
 
 export async function requestRefresh(): Promise<TokenResponse> {
   const response =
     await apiClient.patch<TokenResponse>(
-      "/usuarios/refresh"
+      "/auth/refresh"
     );
   return response.data;
 }
@@ -63,7 +76,7 @@ export async function requestLogout(
   accessToken: string
 ): Promise<void> {
   await apiClient.post(
-    "/usuarios/logout",
+    "/auth/logout",
     {},
     {
       headers: {

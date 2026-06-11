@@ -32,6 +32,10 @@ export default function Sidebar() {
       path: "/pedidos",
     },
     {
+      label: "Cocina",
+      path: "/cocina",
+    },
+    {
       label: "Usuarios",
       path: "/usuarios",
     },
