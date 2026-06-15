@@ -4,13 +4,12 @@ import type {
   IUserCreate,
   IUserUpdate,
   IUserPaginado,
+  IUserRoleAction,
 } from "../types/users.types";
 
 import { apiClient } from "../../../api/axiosInstance";
 
-type IUserRoleAction = {
-  rol: UserRole;
-};
+
 
 
 export const getUsers = async (
@@ -89,7 +88,7 @@ export const deleteUser = async (
   id: number
 ): Promise<void> => {
   try {
-    await apiClient.delete(`/usuarios/${id}`);
+    await apiClient.delete(`/admin/usuarios/${id}`);
   } catch (error) {
     console.error("Error eliminando usuario:", error);
     throw error;

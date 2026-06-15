@@ -41,7 +41,6 @@ export interface IUserCreate {
   celular: string;
   email: string;
   password: string;
-  roles: UserRole[];
 }
 
 export interface IUserUpdate {
@@ -58,3 +57,9 @@ export interface IUserPaginado {
   total: number;
   data: UserPublic[];
 }
+
+export interface IUserRoleAction  {
+  usuario_id: number;
+  codigo_rol: UserRole;
+  expires_at?: string | null;
+};

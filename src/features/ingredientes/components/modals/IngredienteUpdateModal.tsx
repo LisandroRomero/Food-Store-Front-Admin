@@ -1,6 +1,6 @@
 import type {
   IIngrediente,
-  UpdateIngrediente,
+  IIngredienteUpdate,
 } from "../../types/ingredientes.type";
 
 import IngredienteForm from "../../components/IngredienteForm";
@@ -15,7 +15,7 @@ type Props = {
 
   onUpdate: (
     id: number,
-    data: UpdateIngrediente
+    data: IIngredienteUpdate
   ) => void;
 };
 
@@ -26,7 +26,7 @@ const IngredienteUpdateModal = ({
   onUpdate,
 }: Props) => {
   const handleSubmit = (
-    values: UpdateIngrediente
+    values: IIngredienteUpdate
   ) => {
     onUpdate(ingrediente.id, values);
 

@@ -1,8 +1,6 @@
 import { useForm } from "@tanstack/react-form";
-
 import type {
   UserPublic,
-  UserRole,
   IUserCreate,
   IUserUpdate,
 } from "../types/users.types";
@@ -14,32 +12,17 @@ type FormValues = {
   email: string;
   password: string;
   activo: boolean;
-  roles: UserRole[];
 };
 
 type Props = {
   initial?: UserPublic | null;
   onSubmit: (
     data: IUserCreate | IUserUpdate,
-    roles: UserRole[]
   ) => void;
   isPending?: boolean;
   error?: string | null;
 };
 
-const ALL_ROLES: UserRole[] = [
-  "ADMIN",
-  "STOCK",
-  "PEDIDOS",
-  "CLIENT",
-];
-
-const ROLES_LABEL: Record<UserRole, string> = {
-  ADMIN: "Administrador",
-  STOCK: "Stock",
-  PEDIDOS: "Pedidos",
-  CLIENT: "Cliente",
-};
 
 export default function UsersForm({
   initial,
@@ -55,8 +38,6 @@ export default function UsersForm({
       email: initial?.email ?? "",
       password: "",
       activo: initial?.activo ?? true,
-      roles:
-        initial?.roles?.map((r) => r.codigo) ?? [],
     } as FormValues,
     onSubmit: async ({ value }) => {
       if (initial) {
@@ -68,7 +49,7 @@ export default function UsersForm({
         if (value.email) data.email = value.email;
         data.activo = value.activo;
 
-        onSubmit(data, value.roles);
+        onSubmit(data);
       } else {
         // CREATE
         const data: IUserCreate = {
@@ -77,10 +58,9 @@ export default function UsersForm({
           celular: value.celular,
           email: value.email,
           password: value.password,
-          roles: value.roles,
         };
 
-        onSubmit(data, value.roles);
+        onSubmit(data);
       }
     },
   });
@@ -301,49 +281,6 @@ export default function UsersForm({
           )}
         </form.Field>
       )}
-
-      {/* Roles */}
-      <form.Field name="roles">
-        {(field) => (
-          <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1">
-              Roles
-            </label>
-            <div className="space-y-1">
-              {ALL_ROLES.map((role) => {
-                const isSelected = field.state.value.includes(role);
-                return (
-                  <label
-                    key={role}
-                    className="flex items-center gap-2 text-sm p-1 hover:bg-gray-50 rounded cursor-pointer"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={isSelected}
-                      onChange={(e) => {
-                        if (e.target.checked)
-                          field.handleChange([
-                            ...field.state.value,
-                            role,
-                          ]);
-                        else
-                          field.handleChange(
-                            field.state.value.filter(
-                              (r) => r !== role
-                            )
-                          );
-                      }}
-                      className="w-4 h-4 text-blue-600"
-                    />
-                    <span>{ROLES_LABEL[role]}</span>
-                  </label>
-                );
-              })}
-            </div>
-          </div>
-        )}
-      </form.Field>
-
       <button
         type="submit"
         disabled={isPending}

@@ -1,36 +1,11 @@
 import { useState } from "react";
-
-import {
-  useQuery,
-  useMutation,
-  useQueryClient,
-} from "@tanstack/react-query";
-
-import {
-  createColumnHelper,
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
-
-import {
-  getUsers,
-  createUser,
-  updateUser,
-  deleteUser,
-  assignRole,
-  removeRole,
-} from "../services/users.service";
-
-import type {
-  UserPublic,
-  UserRole,
-  IUserCreate,
-  IUserUpdate,
-} from "../types/users.types";
-
+import {  useQuery,useMutation,useQueryClient,} from "@tanstack/react-query";
+import {  createColumnHelper,flexRender,getCoreRowModel,useReactTable,} from "@tanstack/react-table";
+import {  getUsers,  createUser,  updateUser,  deleteUser,} from "../services/users.service";
+import type {  UserPublic,  UserRole,  IUserCreate,  IUserUpdate,} from "../types/users.types";
 import UsersForm from "./UsersForm";
 import Modal from "../../../shared/Modal";
+import UserRolesForm from "./UserRolesForm";
 
 const columnHelper = createColumnHelper<UserPublic>();
 
@@ -43,7 +18,8 @@ const ROLES_LABEL: Record<UserRole, string> = {
 
 const getColumns = (
   openEdit: (u: UserPublic) => void,
-  deleteMut: any
+  deleteMut: any,
+  openRoles: (u: UserPublic) => void,
 ) => [
   columnHelper.accessor("id", {
     header: "ID",
@@ -141,6 +117,12 @@ const getColumns = (
           Editar
         </button>
         <button
+          onClick={() => openRoles(info.row.original)}
+          className="text-xs bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-lg transition-colors"
+        >
+          Roles
+        </button>
+        <button
           onClick={() => {
             if (confirm("¿Desactivar usuario?")) {
               deleteMut.mutate(info.row.original.id);
@@ -160,6 +142,8 @@ export default function UsersTable() {
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<UserPublic | null>(null);
+  const [rolesModalOpen, setRolesModalOpen] =  useState(false);
+  const [selectedUser, setSelectedUser] =  useState<UserPublic | null>(null);
   const [mutError, setMutError] = useState<string | null>(null);
   const [rolFilter, setRolFilter] = useState<UserRole | "">("");
 
@@ -172,7 +156,7 @@ export default function UsersTable() {
   // CREATE
   const createMut = useMutation({
     mutationFn: createUser,
-    onSuccess: (_, variables) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
       closeModal();
     },
@@ -189,29 +173,10 @@ export default function UsersTable() {
     },
     onError: (err: Error) => setMutError(err.message),
   });
-
-  // ASSIGN ROLE
-  const assignRoleMut = useMutation({
-    mutationFn: ({
-      userId,
-      codigo_rol,
-    }: {
-      userId: number;
-      codigo_rol: UserRole;
-    }) => assignRole(userId, { rol: codigo_rol }),
-  });
-
-  // REMOVE ROLE
-  const removeRoleMut = useMutation({
-    mutationFn: ({
-      userId,
-      codigo_rol,
-    }: {
-      userId: number;
-      codigo_rol: UserRole;
-    }) => removeRole(userId, { rol: codigo_rol }),
-  });
-
+  const closeRolesModal = () => {
+    setSelectedUser(null);
+    setRolesModalOpen(false);
+  };
   // DELETE
   const deleteMut = useMutation({
     mutationFn: deleteUser,
@@ -220,113 +185,40 @@ export default function UsersTable() {
     onError: (err: Error) => setMutError(err.message),
   });
 
+  const openCreate = () => {
+    setEditing(null);
+    setMutError(null);
+    setModalOpen(true);
+  };
+
   const openEdit = (user: UserPublic) => {
     setEditing(user);
     setMutError(null);
     setModalOpen(true);
   };
-
+  const openRoles = (user: UserPublic) => {
+    setSelectedUser(user);
+    setRolesModalOpen(true);
+  };
   const closeModal = () => {
     setModalOpen(false);
     setEditing(null);
     setMutError(null);
   };
 
-  // ===== SUBMIT: coordina update/register + roles =====
-  const handleSubmit = async (
-    formData: IUserCreate | IUserUpdate,
-    selectedRoles: UserRole[]
-  ) => {
+  const handleSubmit = (formData: IUserCreate | IUserUpdate) => {
     setMutError(null);
 
     if (editing) {
-      // 1) Update basic fields
-      updateMut.mutate(
-        { id: editing.id, data: formData },
-        {
-          onSuccess: () => {
-            // 2) Diff roles
-            const currentRoles: UserRole[] = editing.roles.map(
-              (r) => r.codigo
-            );
-            const toAdd = selectedRoles.filter(
-              (r) => !currentRoles.includes(r)
-            );
-            const toRemove = currentRoles.filter(
-              (r) => !selectedRoles.includes(r)
-            );
-
-            // 3) Apply role changes sequentially
-            const promises: Promise<any>[] = [];
-            toAdd.forEach((r) => {
-              promises.push(
-                assignRoleMut.mutateAsync({
-                  userId: editing.id,
-                  codigo_rol: r,
-                })
-              );
-            });
-            toRemove.forEach((r) => {
-              promises.push(
-                removeRoleMut.mutateAsync({
-                  userId: editing.id,
-                  codigo_rol: r,
-                })
-              );
-            });
-
-            if (promises.length > 0) {
-              Promise.all(promises)
-                .then(() => {
-                  queryClient.invalidateQueries({
-                    queryKey: ["users"],
-                  });
-                  closeModal();
-                })
-                .catch((err: any) =>
-                  setMutError(
-                    err?.message ?? "Error actualizando roles"
-                  )
-                );
-            } else {
-              closeModal();
-            }
-          },
-        }
-      );
-    } else {
-      // CREATE: register first, then assign roles
-      createMut.mutate(formData as IUserCreate, {
-        onSuccess: (createdUser) => {
-          if (selectedRoles.length > 0) {
-            const promises = selectedRoles.map((r) =>
-              assignRoleMut.mutateAsync({
-                userId: createdUser.id,
-                codigo_rol: r,
-              })
-            );
-            Promise.all(promises)
-              .then(() => {
-                queryClient.invalidateQueries({
-                  queryKey: ["users"],
-                });
-                closeModal();
-              })
-              .catch((err: any) =>
-                setMutError(
-                  err?.message ?? "Error asignando roles"
-                )
-              );
-          } else {
-            closeModal();
-          }
-        },
+      updateMut.mutate({
+        id: editing.id,
+        data: formData as IUserUpdate,
       });
+    } else {
+      createMut.mutate(formData as IUserCreate);
     }
   };
-
-  const columns = getColumns(openEdit, deleteMut);
-
+  const columns = getColumns(openEdit, deleteMut,openRoles);
   const table = useReactTable({
     data: data?.data ?? [],
     columns,
@@ -340,7 +232,6 @@ export default function UsersTable() {
       </div>
     );
   }
-
   if (isError) {
     return (
       <div className="text-center py-12 text-red-500 bg-red-50 rounded-lg">
@@ -348,7 +239,6 @@ export default function UsersTable() {
       </div>
     );
   }
-
   return (
     <div className="space-y-6">
       {/* Filters + New button */}
@@ -380,14 +270,13 @@ export default function UsersTable() {
         </div>
 
         <button
-          onClick={() => setModalOpen(true)}
+          onClick={openCreate}
           className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
         >
           + Nuevo
         </button>
       </div>
 
-      {/* Table */}
       <article className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
         <table className="w-full text-left text-sm">
           <thead className="bg-gray-50 border-b text-gray-500 uppercase text-[11px] tracking-wider">
@@ -408,7 +297,7 @@ export default function UsersTable() {
             {table.getRowModel().rows.length === 0 && (
               <tr>
                 <td
-                  colSpan={getColumns(openEdit, deleteMut).length}
+                  colSpan={columns.length}
                   className="text-center py-12 text-gray-400"
                 >
                   No hay usuarios
@@ -433,8 +322,6 @@ export default function UsersTable() {
           </tbody>
         </table>
       </article>
-
-      {/* Modal */}
       <Modal
         open={modalOpen}
         onClose={closeModal}
@@ -448,6 +335,20 @@ export default function UsersTable() {
           error={mutError}
         />
       </Modal>
+      <Modal
+        open={rolesModalOpen}
+        onClose={closeRolesModal}
+         title={`Roles de ${
+           selectedUser?.nombre ?? ""
+        }`}
+        >
+          {selectedUser && (
+            <UserRolesForm
+             user={selectedUser}
+             onClose={closeRolesModal}
+            />
+          )}
+        </Modal>
     </div>
   );
 }
