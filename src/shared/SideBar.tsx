@@ -1,45 +1,64 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import type { UserRole } from "../features/users/types/users.types";
 import { useAuthStore } from "../features/users/store/useAuthStore";
+
+interface SidebarLink {
+  label: string;
+  path: string;
+  allowedRoles: UserRole[];
+}
 
 export default function Sidebar() {
   const location = useLocation();
   const navigate = useNavigate();
   const logout = useAuthStore((state) => state.logout);
   const user = useAuthStore((state) => state.user);
+  const hasRole = useAuthStore((state) => state.hasRole);
 
-  const links = [
+  const links: SidebarLink[] = [
     {
       label: "Home",
       path: "/",
+      allowedRoles: ["ADMIN", "PEDIDOS", "STOCK"],
     },
 
     {
       label: "Productos",
       path: "/productos",
+      allowedRoles: ["ADMIN", "STOCK"],
     },
 
     {
       label: "Categorías",
       path: "/categorias",
+      allowedRoles: ["ADMIN", "STOCK"],
     },
 
     {
       label: "Ingredientes",
       path: "/ingredientes",
+      allowedRoles: ["ADMIN", "STOCK"],
     },
     {
       label: "Pedidos",
       path: "/pedidos",
+      allowedRoles: ["ADMIN", "PEDIDOS"],
     },
     {
       label: "Cocina",
       path: "/cocina",
+      allowedRoles: ["ADMIN", "PEDIDOS"],
     },
     {
       label: "Usuarios",
       path: "/usuarios",
+      allowedRoles: ["ADMIN"],
     },
   ];
+
+  const visibleLinks = links.filter((link) =>
+    hasRole(...link.allowedRoles)
+  );
 
   return (
     <aside
@@ -66,7 +85,7 @@ export default function Sidebar() {
 
       {/* NAV */}
       <nav className="flex flex-col gap-2">
-        {links.map((link) => {
+        {visibleLinks.map((link) => {
           const isActive = location.pathname === link.path;
 
           return (
