@@ -118,6 +118,8 @@ export function useWebSocket({
       wsRef.current = ws;
 
       ws.onopen = () => {
+        console.log("WS OPEN");
+        
         if (cancelled) {
           // El componente se desmontó mientras el socket conectaba (StrictMode).
           // Cerramos sin emitir WS_CONNECTED para no ejecutar lógica stale.
@@ -149,6 +151,13 @@ export function useWebSocket({
       };
 
       ws.onclose = (e) => {
+        console.log(
+          "WS CLOSED",
+          "code=", e.code,
+          "reason=", e.reason,
+          "clean=", e.wasClean
+        );
+
         // Si este onclose pertenece a un socket ya reemplazado (por un reintento
         // previo que llegó tarde), lo ignoramos para no interferir con el nuevo.
         if (wsRef.current === ws) wsRef.current = null;
@@ -193,7 +202,7 @@ export function useWebSocket({
   const subscribeToOrder = useCallback((pedido_id: number) => {
     if (wsRef.current?.readyState === WebSocket.OPEN) {
       wsRef.current.send(
-        JSON.stringify({ action: "subscribe-pedido", pedido_id: pedido_id }),
+        JSON.stringify({ action: "subscribe-order", pedido_id: pedido_id }),
       );
     }
   }, []);
@@ -206,7 +215,7 @@ export function useWebSocket({
   const unsubscribeFromOrder = useCallback((pedido_id: number) => {
     if (wsRef.current?.readyState === WebSocket.OPEN) {
       wsRef.current.send(
-        JSON.stringify({ action: "unsubscribe-pedido", pedido_id: pedido_id }),
+        JSON.stringify({ action: "unsubscribe-order", pedido_id: pedido_id }),
       );
     }
   }, []);

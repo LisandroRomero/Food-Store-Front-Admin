@@ -1,6 +1,8 @@
 import { useForm } from "@tanstack/react-form";
 import { useQuery } from "@tanstack/react-query";
 
+import MultiImageUploader from "../../../shared/MultiImageUploader";
+
 import { getCategorias } from "../../categorias/services/categorias.services";
 import { getIngredientes } from "../../ingredientes/services/ingredientes.service";
 
@@ -9,6 +11,16 @@ import type {
   CreateProductoDTO,
   UpdateProductoDTO,
 } from "../types/productos.type";
+
+const UNIDADES_MEDIDA = [
+  { id: 1, nombre: "kilogramo", simbolo: "kg", tipo: "masa" },
+  { id: 2, nombre: "gramo", simbolo: "g", tipo: "masa" },
+  { id: 3, nombre: "litro", simbolo: "L", tipo: "volumen" },
+  { id: 4, nombre: "mililitro", simbolo: "mL", tipo: "volumen" },
+  { id: 5, nombre: "pieza", simbolo: "u", tipo: "unidad" },
+  { id: 6, nombre: "docena", simbolo: "doc", tipo: "unidad" },
+  { id: 7, nombre: "metro cuadrado", simbolo: "m²", tipo: "area" },
+] as const;
 
 interface ProductFormProps {
   initial?: Producto | null;
@@ -41,11 +53,13 @@ export default function ProductosForm({
       descripcion: initial?.descripcion ?? "",
       precio_base: initial?.precio_base ?? 0,
       imagenes_url:
-        initial?.imagenes_url?.join("\n") ?? "",
+        initial?.imagenes_url ?? [],
       stock_cantidad:
         initial?.stock_cantidad ?? 0,
       disponible:
         initial?.disponible ?? true,
+      unidad_medida_id:
+        initial?.unidad_medida?.id,
       categorias:
         initial?.categorias?.map((c) => ({
           id: c.id,
@@ -54,24 +68,19 @@ export default function ProductosForm({
       ingredientes:
         initial?.ingredientes?.map((i) => ({
           id: i.id,
+          cantidad: i.cantidad,
           es_removible: i.es_removible,
         })) ?? [],
     },
     onSubmit: async ({ value }) => {
-      const formattedData = {
+      const formattedData: CreateProductoDTO = {
         ...value,
-        imagenes_url: value.imagenes_url
-          .split("\n")
-          .filter((u: string) => u.trim()),
-        unidad_medida_id: 1,
-        ingredientes: value.ingredientes.map(
-          (i: { id: number; es_removible: boolean }) => ({
-            id: i.id,
-            cantidad: 1,
-            unidad_medida_id: 1,
-            es_removible: i.es_removible,
-          })
-        ),
+        ingredientes: value.ingredientes.map((i) => ({
+          id: i.id,
+          cantidad: i.cantidad,
+          unidad_medida_id: value.unidad_medida_id,
+          es_removible: i.es_removible,
+        })),
       };
       onSubmit(formattedData);
     },
@@ -95,8 +104,8 @@ export default function ProductosForm({
         </p>
       )}
 
-      {/* Nombre + Precio */}
-      <div className="grid grid-cols-2 gap-4">
+      {/* Nombre + Precio + Unidad Medida */}
+      <div className="grid grid-cols-3 gap-4">
         <form.Field name="nombre">
           {(field) => (
             <div>
@@ -126,6 +135,8 @@ export default function ProductosForm({
               </label>
               <input
                 type="number"
+                step="0.01"
+                min="0"
                 className={inputClass}
                 value={field.state.value}
                 onBlur={field.handleBlur}
@@ -136,6 +147,37 @@ export default function ProductosForm({
                 }
                 required
               />
+            </div>
+          )}
+        </form.Field>
+
+        <form.Field name="unidad_medida_id">
+          {(field) => (
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-1">
+                Unidad de Medida
+              </label>
+              <select
+                className={inputClass}
+                value={field.state.value ?? ""}
+                onBlur={field.handleBlur}
+                onChange={(e) =>
+                  field.handleChange(
+                    e.target.value
+                      ? Number(e.target.value)
+                      : undefined as any
+                  )
+                }
+              >
+                <option value="">
+                  Seleccionar...
+                </option>
+                {UNIDADES_MEDIDA.map((u) => (
+                  <option key={u.id} value={u.id}>
+                    {u.nombre} ({u.simbolo})
+                  </option>
+                ))}
+              </select>
             </div>
           )}
         </form.Field>
@@ -165,22 +207,11 @@ export default function ProductosForm({
       {/* Imágenes */}
       <form.Field name="imagenes_url">
         {(field) => (
-          <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1">
-              Imágenes (una URL por línea)
-            </label>
-            <textarea
-              className={inputClass}
-              value={field.state.value}
-              onChange={(e) =>
-                field.handleChange(
-                  e.target.value
-                )
-              }
-              rows={2}
-              placeholder="https://..."
-            />
-          </div>
+          <MultiImageUploader
+            value={field.state.value}
+            onChange={field.handleChange}
+            label="Imágenes del producto"
+          />
         )}
       </form.Field>
 
@@ -328,17 +359,18 @@ export default function ProductosForm({
               <h4 className="text-xs font-bold text-gray-400 uppercase mb-2">
                 Ingredientes
               </h4>
-              <div className="max-h-32 overflow-y-auto space-y-1">
+              <div className="max-h-48 overflow-y-auto space-y-1">
                 {(ingData?.data ?? []).map(
                   (i: any) => {
-                    const isSelected =
-                      field.state.value.some(
+                    const current =
+                      field.state.value.find(
                         (si) => si.id === i.id
                       );
+                    const isSelected = !!current;
                     return (
-                      <label
+                      <div
                         key={i.id}
-                        className="flex items-center gap-2 text-sm p-1 hover:bg-gray-50 rounded cursor-pointer"
+                        className="flex items-center gap-2 text-sm p-1 hover:bg-gray-50 rounded"
                       >
                         <input
                           type="checkbox"
@@ -354,6 +386,7 @@ export default function ProductosForm({
                                     .value,
                                   {
                                     id: i.id,
+                                    cantidad: 1,
                                     es_removible:
                                       false,
                                   },
@@ -373,37 +406,64 @@ export default function ProductosForm({
                           {i.nombre}
                         </span>
                         {isSelected && (
-                          <button
-                            type="button"
-                            onClick={() =>
-                              field.handleChange(
-                                field.state.value.map(
-                                  (si) =>
-                                    si.id ===
-                                    i.id
-                                      ? {
-                                          ...si,
-                                          es_removible:
-                                            !si.es_removible,
-                                        }
-                                      : si
+                          <>
+                            <input
+                              type="number"
+                              min={0}
+                              step="0.1"
+                              className="w-16 rounded border border-gray-300 px-1.5 py-1 text-xs text-center outline-none focus:border-blue-500"
+                              value={
+                                current?.cantidad ?? 1
+                              }
+                              onClick={(e) =>
+                                e.stopPropagation()
+                              }
+                              onChange={(e) =>
+                                field.handleChange(
+                                  field.state.value.map(
+                                    (si) =>
+                                      si.id === i.id
+                                        ? {
+                                            ...si,
+                                            cantidad:
+                                              Number(
+                                                e.target
+                                                  .value
+                                              ) || 0,
+                                          }
+                                        : si
+                                  )
                                 )
-                              )
-                            }
-                            className={`text-[10px] px-1 rounded ${
-                              field.state.value.find(
-                                (si) =>
-                                  si.id === i.id
-                              )
-                                ?.es_removible
-                                ? "bg-amber-600 text-white"
-                                : "bg-gray-200"
-                            }`}
-                          >
-                            Removible
-                          </button>
+                              }
+                            />
+                            <button
+                              type="button"
+                              onClick={() =>
+                                field.handleChange(
+                                  field.state.value.map(
+                                    (si) =>
+                                      si.id ===
+                                      i.id
+                                        ? {
+                                            ...si,
+                                            es_removible:
+                                              !si.es_removible,
+                                          }
+                                        : si
+                                  )
+                                )
+                              }
+                              className={`text-[10px] px-1 rounded ${
+                                current?.es_removible
+                                  ? "bg-amber-600 text-white"
+                                  : "bg-gray-200"
+                              }`}
+                            >
+                              Removible
+                            </button>
+                          </>
                         )}
-                      </label>
+                      </div>
                     );
                   }
                 )}

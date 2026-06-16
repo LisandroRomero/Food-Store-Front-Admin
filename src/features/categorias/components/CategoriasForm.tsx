@@ -1,5 +1,7 @@
 import { useForm } from "@tanstack/react-form";
 
+import ImageUploader from "../../../shared/ImageUploader";
+
 import type {
   ICategoria,
   ICategoriaCreate,
@@ -115,18 +117,11 @@ const CategoriaForm = ({
 
       <form.Field name="imagen_url">
         {(field) => (
-          <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1">
-              URL de imagen
-            </label>
-            <input
-              className={inputClass}
-              value={field.state.value}
-              onBlur={field.handleBlur}
-              onChange={(e) => field.handleChange(e.target.value)}
-              placeholder="https://..."
-            />
-          </div>
+          <ImageUploader
+            value={field.state.value}
+            onChange={field.handleChange}
+            label="Imagen de la categoría"
+          />
         )}
       </form.Field>
 

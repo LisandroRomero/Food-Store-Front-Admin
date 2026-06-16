@@ -13,8 +13,10 @@ export function usePedidosRealtime(enabled = true) {
     (msg: WsMessage) => {
       switch (msg.event) {
         case "WS_CONNECTED":
-        case "PEDIDO_CREADO":
-        case "PEDIDO_ACTUALIZADO":
+        case "NUEVO_PEDIDO":
+        case "PEDIDO_CONFIRMADO":
+        case "PEDIDO_EN_PREPARACION":
+        case "PEDIDO_ENTREGADO":
         case "PEDIDO_CANCELADO":
           void loadPedidos();
           break;

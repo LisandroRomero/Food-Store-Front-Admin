@@ -6,6 +6,16 @@ import type {
   IIngredienteUpdate,
 } from "../types/ingredientes.type";
 
+const UNIDADES_MEDIDA = [
+  { id: 1, nombre: "kilogramo", simbolo: "kg", tipo: "masa" },
+  { id: 2, nombre: "gramo", simbolo: "g", tipo: "masa" },
+  { id: 3, nombre: "litro", simbolo: "L", tipo: "volumen" },
+  { id: 4, nombre: "mililitro", simbolo: "mL", tipo: "volumen" },
+  { id: 5, nombre: "pieza", simbolo: "u", tipo: "unidad" },
+  { id: 6, nombre: "docena", simbolo: "doc", tipo: "unidad" },
+  { id: 7, nombre: "metro cuadrado", simbolo: "m²", tipo: "area" },
+];
+
 type Props = {
   initial?: IIngrediente | null;
 
@@ -25,6 +35,13 @@ const IngredienteForm = ({
   isPending = false,
   error = null,
 }: Props) => {
+  const defaultUnidadId =
+    UNIDADES_MEDIDA.find(
+      (u) =>
+        u.nombre ===
+        initial?.unidad_medida?.nombre
+    )?.id ?? undefined;
+
   const form = useForm({
     defaultValues: {
       nombre: initial?.nombre ?? "",
@@ -32,6 +49,9 @@ const IngredienteForm = ({
         initial?.descripcion ?? "",
       es_alergeno:
         initial?.es_alergeno ?? false,
+      stock_cantidad:
+        initial?.stock_cantidad ?? 0,
+      unidad_medida_id: defaultUnidadId,
     },
 
     onSubmit: async ({ value }) => {
@@ -151,6 +171,111 @@ const IngredienteForm = ({
               }
               rows={3}
             />
+
+            {field.state.meta.errors
+              .length > 0 && (
+              <p className="text-sm text-red-500 mt-1">
+                {
+                  field.state.meta
+                    .errors[0]
+                }
+              </p>
+            )}
+          </div>
+        )}
+      </form.Field>
+
+      <form.Field
+        name="stock_cantidad"
+        validators={{
+          onChange: ({ value }) =>
+            value < 0
+              ? "El stock no puede ser negativo"
+              : undefined,
+        }}
+      >
+        {(field) => (
+          <div>
+            <label
+              className="
+                block
+                text-xs
+                font-medium
+                text-gray-500
+                mb-1
+              "
+            >
+              Stock
+            </label>
+
+            <input
+              type="number"
+              min={0}
+              className={inputClass}
+              value={field.state.value}
+              onBlur={field.handleBlur}
+              onChange={(e) =>
+                field.handleChange(
+                  Number(e.target.value)
+                )
+              }
+            />
+
+            {field.state.meta.errors
+              .length > 0 && (
+              <p className="text-sm text-red-500 mt-1">
+                {
+                  field.state.meta
+                    .errors[0]
+                }
+              </p>
+            )}
+          </div>
+        )}
+      </form.Field>
+
+      <form.Field name="unidad_medida_id">
+        {(field) => (
+          <div>
+            <label
+              className="
+                block
+                text-xs
+                font-medium
+                text-gray-500
+                mb-1
+              "
+            >
+              Unidad de Medida
+            </label>
+
+            <select
+              className={inputClass}
+              value={
+                field.state.value ?? ""
+              }
+              onBlur={field.handleBlur}
+              onChange={(e) =>
+                field.handleChange(() =>
+                  e.target.value
+                    ? Number(e.target.value)
+                    : undefined
+                )
+              }
+            >
+              <option value="">
+                Seleccionar...
+              </option>
+
+              {UNIDADES_MEDIDA.map((u) => (
+                <option
+                  key={u.id}
+                  value={u.id}
+                >
+                  {u.nombre} ({u.simbolo})
+                </option>
+              ))}
+            </select>
 
             {field.state.meta.errors
               .length > 0 && (

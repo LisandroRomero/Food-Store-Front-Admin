@@ -1,7 +1,8 @@
-// src/pages/IngredienteDetailPage.tsx
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getIngredienteById } from "../../services/ingredientes.service";
+
+
 
 export default function IngredienteDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -17,13 +18,28 @@ export default function IngredienteDetailPage() {
   if (error) return <p className="text-center py-20 text-red-500">Error: {error.message}</p>;
   if (!ingrediente) return <p className="text-center py-20 text-gray-400">Ingrediente no encontrado</p>;
 
+  const unidad = ingrediente.unidad_medida;
+
   return (
     <main className="max-w-4xl mx-auto px-4 py-8">
       <Link to="/ingredientes" className="text-blue-600 hover:underline text-sm mb-6 inline-block">← Volver a ingredientes</Link>
       <article className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">{ingrediente.nombre}</h1>
         <p className="text-gray-600 mb-6">{ingrediente.descripcion}</p>
-        
+
+        <div className="grid grid-cols-2 gap-4 mb-6 text-sm">
+          <div>
+            <span className="text-gray-500">Stock:</span>
+            <span className="ml-2 font-medium text-gray-800">{ingrediente.stock_cantidad}</span>
+          </div>
+          <div>
+            <span className="text-gray-500">Unidad de Medida:</span>
+            <span className="ml-2 font-medium text-gray-800">
+              {unidad ? `${unidad.nombre} (${unidad.simbolo})` : "—"}
+            </span>
+          </div>
+        </div>
+
         <div className="flex gap-4 mb-8">
           <span className={`px-3 py-1 rounded-full text-sm font-medium ${ingrediente.es_alergeno ? "bg-amber-100 text-amber-700" : "bg-blue-100 text-blue-700"}`}>
             {ingrediente.es_alergeno ? "⚠️ Contiene Alérgenos" : "✓ Libre de Alérgenos"}

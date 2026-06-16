@@ -1,6 +1,7 @@
 import { useEffect, useMemo } from "react";
 import { usePedidosStore } from "../store/pedidos.store";
 import { PedidoColumn } from "../components/PedidoColumn";
+import { usePedidosRealtimeCocina } from "../hooks/usePedidosRealTimeCocina";
 
 export default function CocinaKanbanPage() {
   const {
@@ -14,6 +15,8 @@ export default function CocinaKanbanPage() {
     loadPedidos();
   }, [loadPedidos]);
 
+  usePedidosRealtimeCocina();
+  
   const groupedPedidos = useMemo(() => {
     return {
       

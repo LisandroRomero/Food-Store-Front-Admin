@@ -1,4 +1,3 @@
-
 import { type IPedido } from "../types/pedidos.type";
 import { PedidoCard } from "./PedidoCard";
 
@@ -6,12 +5,14 @@ interface PedidoColumnProps {
   estado: string;
   pedidos: IPedido[];
   onAdvance: (id: number) => void;
+  onCancel: (id: number, motivo: string) => void;
 }
 
 export function PedidoColumn({
   estado,
   pedidos,
   onAdvance,
+  onCancel,
 }: PedidoColumnProps) {
   return (
     <div className="min-h-[80vh] min-w-[320px] rounded-2xl bg-white p-4 shadow">
@@ -31,6 +32,7 @@ export function PedidoColumn({
             key={pedido.id}
             pedido={pedido}
             onAdvance={onAdvance}
+            onCancel={onCancel}
           />
         ))}
       </div>

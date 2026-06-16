@@ -32,6 +32,8 @@ import IngredienteForm from "./IngredienteForm";
 
 import Modal from "../../../shared/Modal";
 
+
+
 const columnHelper =
   createColumnHelper<IIngrediente>();
 
@@ -63,9 +65,45 @@ const getColumns = (
   }),
 
   columnHelper.accessor(
+    "stock_cantidad",
+    {
+      header: "Stock",
+
+      cell: (info) => {
+        const val = info.getValue();
+        return val != null ? (
+          <span className="text-gray-700 font-mono text-sm">
+            {val}
+          </span>
+        ) : (
+          <span className="text-gray-400">—</span>
+        );
+      },
+    }
+  ),
+
+  columnHelper.accessor(
+    "unidad_medida",
+    {
+      header: "U.Medida",
+
+      cell: (info) => {
+        const val = info.getValue();
+        return val ? (
+          <span className="text-gray-600 text-sm">
+            {val.nombre} ({val.simbolo})
+          </span>
+        ) : (
+          <span className="text-gray-400">—</span>
+        );
+      },
+    }
+  ),
+
+  columnHelper.accessor(
     "es_alergeno",
     {
-      header: "Estado",
+      header: "Alergeno",
 
       cell: (info) => (
         <span

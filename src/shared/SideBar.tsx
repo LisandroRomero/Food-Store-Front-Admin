@@ -23,6 +23,11 @@ export default function Sidebar() {
     },
 
     {
+      label: "Estadísticas",
+      path: "/dashboard",
+      allowedRoles: ["ADMIN"],
+    },
+    {
       label: "Productos",
       path: "/productos",
       allowedRoles: ["ADMIN", "STOCK"],

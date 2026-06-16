@@ -7,6 +7,7 @@ import IngredientePage from "../features/ingredientes/pages/IngredientePage";
 import CategoriaPage from "../features/categorias/pages/CategoriaPage";
 import ProductoPage from "../features/productos/pages/ProductoPage";
 import HomePage from "./HomePage";
+import DashboardPage from "../features/dashboard/pages/DashboardPage";
 import LoginPage from "../features/users/pages/LoginPage";
 import AdminLayout from "../shared/AdminLayout";
 import PedidosKanbanPage from "../features/ordenes/pages/PedidosKanbanPage";
@@ -26,24 +27,6 @@ const AppRouter = () => {
         />
         <Route path="/forbidden" element={<ForbiddenPage />} />
 
-        {/* PRIVADA GENERAL */}
-        <Route
-          element={
-            <ProtectedRoute
-              allowedRoles={[
-                "ADMIN",
-                "PEDIDOS",
-                "STOCK",
-              ]}
-            />
-          }
-        >
-          <Route
-            path="/"
-            element={<HomePage />}
-          />
-        </Route>
-
         {/* SOLO ADMIN */}
         <Route
           element={
@@ -52,6 +35,22 @@ const AppRouter = () => {
             />
           }
         >
+          <Route
+            path="/"
+            element={
+              <AdminLayout>
+                <HomePage />
+              </AdminLayout>
+            }
+          />
+          <Route
+            path="/dashboard"
+            element={
+              <AdminLayout>
+                <DashboardPage />
+              </AdminLayout>
+            }
+          />
           <Route
             path="/usuarios"
             element={

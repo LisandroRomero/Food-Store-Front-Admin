@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { usePedidosStore } from "../store/pedidos.store";
 import { PedidoColumn } from "../components/PedidoColumn";
 import { usePedidosRealtime } from "../hooks/usePedidosRealTime";
@@ -9,12 +9,13 @@ export default function PedidosKanbanPage() {
     loading,
     loadPedidos,
     advancePedido,
+    cancelPedido,
   } = usePedidosStore();
 
   useEffect(() => {
     loadPedidos();
   }, [loadPedidos]);
-  
+
   usePedidosRealtime();
 
   const groupedPedidos = useMemo(() => {
@@ -26,13 +27,20 @@ export default function PedidosKanbanPage() {
         (p) => p.estado_codigo === "CONFIRMADO"
       ),
       EN_PREPARACION: pedidos.filter(
-        (p) =>  p.estado_codigo === "EN_PREPARACION"
+        (p) => p.estado_codigo === "EN_PREPARACION"
       ),
       ENTREGADO: pedidos.filter(
         (p) => p.estado_codigo === "ENTREGADO"
       ),
     };
   }, [pedidos]);
+
+  const handleCancel = useCallback(
+    (id: number, motivo: string) => {
+      void cancelPedido(id, motivo);
+    },
+    [cancelPedido]
+  );
 
   if (loading) {
     return (
@@ -56,6 +64,7 @@ export default function PedidosKanbanPage() {
               estado={estado}
               pedidos={pedidos}
               onAdvance={advancePedido}
+              onCancel={handleCancel}
             />
           )
         )}
