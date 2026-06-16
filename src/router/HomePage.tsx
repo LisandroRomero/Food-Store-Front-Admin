@@ -1,46 +1,50 @@
 import { Link } from "react-router-dom";
+import { useAuthStore } from "../features/users/store/useAuthStore";
+import type { UserRole } from "../features/users/types/users.types";
 
 export default function HomePage() {
-  const routes = [
+  const hasRole = useAuthStore((state) => state.hasRole);
+
+  const routes: { title: string; path: string; description: string; allowedRoles: UserRole[] }[] = [
     {
       title: "Productos",
       path: "/productos",
-      description:
-        "Gestionar productos",
+      description: "Gestionar productos",
+      allowedRoles: ["ADMIN", "STOCK"],
     },
-
     {
       title: "Categorías",
       path: "/categorias",
-      description:
-        "Gestionar categorías",
+      description: "Gestionar categorías",
+      allowedRoles: ["ADMIN", "STOCK"],
     },
-
     {
       title: "Ingredientes",
       path: "/ingredientes",
-      description:
-        "Gestionar ingredientes",
+      description: "Gestionar ingredientes",
+      allowedRoles: ["ADMIN", "STOCK"],
     },
     {
       title: "Pedidos",
       path: "/pedidos",
-      description:
-        "Gestionar pedidos",
+      description: "Gestionar pedidos",
+      allowedRoles: ["ADMIN", "PEDIDOS"],
     },
     {
       title: "Usuarios",
       path: "/usuarios",
-      description:
-        "Gestionar usuarios del sistema",
+      description: "Gestionar usuarios del sistema",
+      allowedRoles: ["ADMIN"],
     },
     {
       title: "Cocina",
       path: "/cocina",
-      description:
-        "Gestionar pedidos en cocina",
+      description: "Gestionar pedidos en cocina",
+      allowedRoles: ["ADMIN", "PEDIDOS"],
     },
   ];
+
+  const visibleRoutes = routes.filter((r) => hasRole(...r.allowedRoles));
 
   return (
     <section className="min-h-screen bg-gray-50 p-6 lg:p-8">
@@ -57,7 +61,7 @@ export default function HomePage() {
 
         {/* CARDS */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {routes.map((route) => (
+          {visibleRoutes.map((route) => (
             <Link
               key={route.path}
               to={route.path}

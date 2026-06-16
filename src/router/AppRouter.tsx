@@ -27,11 +27,11 @@ const AppRouter = () => {
         />
         <Route path="/forbidden" element={<ForbiddenPage />} />
 
-        {/* SOLO ADMIN */}
+        {/* HOME — landing page para ADMIN, STOCK y PEDIDOS */}
         <Route
           element={
             <ProtectedRoute
-              allowedRoles={["ADMIN"]}
+              allowedRoles={["ADMIN", "STOCK", "PEDIDOS"]}
             />
           }
         >
@@ -43,6 +43,16 @@ const AppRouter = () => {
               </AdminLayout>
             }
           />
+        </Route>
+
+        {/* SOLO ADMIN */}
+        <Route
+          element={
+            <ProtectedRoute
+              allowedRoles={["ADMIN"]}
+            />
+          }
+        >
           <Route
             path="/dashboard"
             element={

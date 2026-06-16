@@ -1,6 +1,5 @@
 import { type IPedido } from "../types/pedidos.type";
 
-
 interface PedidoCardProps {
   pedido: IPedido;
   onAdvance: (id: number) => void;
@@ -40,7 +39,7 @@ export function PedidoCard({
         {pedido.detalle_pedidos.length > 2 && (
           <p>
             +
-            {pedido.detalle_pedidos.length - 2} más
+            {pedido.detalle_pedidos.length - 2} m&aacute;s
           </p>
         )}
       </div>

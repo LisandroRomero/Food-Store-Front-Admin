@@ -54,7 +54,7 @@ export default function ResumenCards() {
   const cards = [
     {
       title: "Ventas hoy",
-      value: `$${data.ventas_hoy.toLocaleString("es-AR")}`,
+      value: `${data.ventas_hoy.toLocaleString("es-AR")}`,
     },
     {
       title: "Ticket promedio",
