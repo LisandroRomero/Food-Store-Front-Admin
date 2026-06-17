@@ -1,28 +1,33 @@
-# Integrantes: 
+# Food Store — Panel de Administración
+
+Panel de administración para Food Store, sistema de gestión de pedidos de comida.
+
+## Cómo levantar el proyecto
+
+```bash
+git clone https://github.com/LisandroRomero/Food-Store-Front-Admin.git
+cd Food-Store-Front-Admin
+pnpm install              # Instalar dependencias
+cp env.example .env       # Crear .env a partir del ejemplo
+pnpm dev                  # Levantar servidor de desarrollo
+```
+
+> ⚠️ Requisitos: **Node.js ≥ 18** y **pnpm** (o npm). Si no tenés pnpm: `npm install -g pnpm`
+> El backend (FastAPI) debe estar corriendo para que el panel funcione.
+
+## Integrantes
+
 - Romero Lisandro
 - Rivas Tobias
-- Vivas Pablo 
+- Vivas Pablo
 - Diaz Moyano Sebastian
-  
 
-Link de los repositorios:
---
+## Repositorios
 
-* Backend: https://github.com/PabloAVivas/Parcial2Prog4
-* Front admin: https://github.com/LisandroRomero/Food-Store-Front-Admin
-* Front store: https://github.com/LisandroRomero/Food-Store-Front-Store
+- Backend: https://github.com/PabloAVivas/Parcial2Prog4
+- Front admin: https://github.com/LisandroRomero/Food-Store-Front-Admin
+- Front store: https://github.com/LisandroRomero/Food-Store-Front-Store
 
-GitHub
-GitHub - PabloAVivas/Parcial2Prog4
-
-## Link de video
-
+## Video
 
 https://youtu.be/fN62z0xsVcw
-
-
-## Inicializacion del proyecto
-```
-  .../Food-Store-Front-Admin  -> pnpm install           Esto instalará todas las dependencias
-  .../Food-Store-Front-Admin  -> pnpm dev               Comando para levantar el front
-```
