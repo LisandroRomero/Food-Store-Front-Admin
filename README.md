@@ -6,7 +6,7 @@
   
 
 Link de los repositorios:
-
+--
 
 * Backend: https://github.com/PabloAVivas/Parcial2Prog4
 * Front admin: https://github.com/LisandroRomero/Food-Store-Front-Admin
@@ -16,6 +16,7 @@ GitHub
 GitHub - PabloAVivas/Parcial2Prog4
 
 ## Link de video
+--
 
 https://youtu.be/fN62z0xsVcw
 
