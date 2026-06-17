@@ -1,7 +1,7 @@
 # Integrantes: 
 - Romero Lisandro
 - Rivas Tobias
-- Vivas Pablo -
+- Vivas Pablo 
 - Diaz Moyano Sebastian
   
 
