@@ -4,9 +4,9 @@
 - Vivas Pablo -
 - Diaz Moyano Sebastian
   
---
+
 Link de los repositorios:
---
+
 
 * Backend: https://github.com/PabloAVivas/Parcial2Prog4
 * Front admin: https://github.com/LisandroRomero/Food-Store-Front-Admin
